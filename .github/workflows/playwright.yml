@@ -8,19 +8,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: pnpm/action-setup@v2
+      - uses: oven-sh/setup-bun@v1
         with:
-          version: latest
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 16
-          cache: 'pnpm'
+          version: 1.0.0
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: bun install --frozen-lockfile
       - name: Install Playwright Browsers
-        run: npx playwright install --with-deps
+        run: bunx playwright install --with-deps
       - name: Run Playwright tests
-        run: npx playwright test
+        run: bunx playwright test
         env:
           MICROCMS_API_KEY: ${{ secrets.MICROCMS_API_KEY }}
           MICROCMS_SERVICE_DOMAIN: ${{ secrets.MICROCMS_SERVICE_DOMAIN }}
