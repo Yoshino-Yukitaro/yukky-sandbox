@@ -1,8 +1,8 @@
 import { createClient } from "microcms-js-sdk";
 import type { MicroCMSQueries } from "microcms-js-sdk";
 const client = createClient({
-  serviceDomain: process.env.MICROCMS_SERVICE_DOMAIN as string,
-  apiKey: process.env.MICROCMS_API_KEY as string,
+  serviceDomain: import.meta.env.MICROCMS_SERVICE_DOMAIN as string,
+  apiKey: import.meta.env.MICROCMS_API_KEY as string,
 });
 
 interface Category {
