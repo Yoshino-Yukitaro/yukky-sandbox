@@ -6,7 +6,7 @@ export interface Props {
   description: string;
   createdAt: string;
 }
-const { title, description, createdAt } = Astro.props;
+const { title, description, createdAt } = Astro.props.frontmatter;
 const OG_TYPE = "article";
 const dateTypeCreatedAt = new Date(createdAt);
 ---
@@ -27,7 +27,7 @@ const dateTypeCreatedAt = new Date(createdAt);
     </p>
     <span class="content-center place-content-center">
       <section
-        class="m-auto prose dark:prose-invert dark:prose-pre:dark:bg-slate-700 md:prose-h1:text-4xl prose-h1:text-2xl md:prose-h2:text-3xl prose-h2:text-xl prose-h1:border-b-yellow-700 prose-h1:border-b-2 prose-h1:font-semibold prose-h2:border-l-8 prose-h2:border-l-orange-500 prose-h2:pl-2 prose-p:text-lg font-sans px-8 pt-10 prose-img:w-full prose-a:break-all md:rounded-3xl bg-white dark:bg-neutral-700 pb-8"
+        class="m-auto prose dark:prose-invert dark:prose-pre:dark:bg-slate-700 md:prose-h2:text-4xl prose-h2:text-2xl md:prose-h3:text-3xl prose-h3:text-xl prose-h2:border-b-yellow-700 prose-h2:border-b-2 prose-h2:font-semibold prose-h3:border-l-8 prose-h3:border-l-orange-500 prose-h3:pl-2 prose-p:text-lg font-sans px-8 pt-10 prose-img:w-full prose-a:break-all md:rounded-3xl bg-white dark:bg-neutral-700 pb-8"
       >
         <slot />
       </section>

@@ -1,0 +1,50 @@
+---
+title: "このブログをAstro v2系にupgradeした時のメモ"
+createdAt: 2023/2/12
+description: "このブログで使用しているAstroのバージョンをv2系にアップグレードした時のメモです。"
+layout: "../../../layouts/PostLayout.astro"
+---
+
+import { Image } from "astro:assets";
+
+## 初めに
+
+先日、dependabotさんが本ブログに使用しているAstroのバージョンをv2系にアップグレードしようとして失敗しているのを見つけました。
+
+テスト項目はビルドに成功したかどうかわかる程度の簡単な項目しかないため、**テストが失敗した = ビルドに失敗した = なんだか難しいアップグレード作業が必要そうだ**、ということで、dependabotさんに頼らず自力でアップグレードしました。
+
+本記事はその時のメモです。
+
+## 本編
+
+結論から言うと、作業はめちゃめちゃ簡単でした。[Astro公式が出しているv2へのアップグレードガイド](https://docs.astro.build/ja/guides/upgrade-to/v2/)を読みながら進めるだけで、あっという間にアップグレードできました。Astroはドキュメントが非常に整っているので大変ありがたいです。
+
+以下、自分がやったことだけを羅列していきますが、人によっては追加の作業が必要だと思われるので、必要に応じて[公式のアップグレードガイド](https://docs.astro.build/ja/guides/upgrade-to/v2/)を参照してください(特にMarkdown周りの機能の更新が多いです)。
+
+### Astroと依存関係のアップグレード
+
+Astroと関連する依存関係のアップグレードを行いました。
+
+```bash
+pnpm install astro@latest @astrojs/tailwind@latest
+pnpm install -D @tailwindcss/typography@latest eslint-plugin-astro@latest prettier-plugin-astro@latest
+```
+
+### `astro.config.mjs` の `defineConfig` の `site` を編集
+
+`astro.config.mjs`の中の`site`の値の最後に`/`を追加しました。
+
+```javascript
+export default defineConfig({
+  integrations: [tailwind()],
+  site: "https://yukky-sandbox.dev/",
+});
+```
+
+## まとめ
+
+殆どやることがなかったため、めっちゃ簡単な記事になりました、、ありがたやありがたや。
+
+作業自体はこれだけでしたが、今回の更新では中々面白そうな機能がいくつか追加されているため、[アップグレードガイド](https://docs.astro.build/ja/guides/upgrade-to/v2/)自体読んでみと結構面白いです。
+
+お時間ある方はぜひ読んでみてください〜〜
