@@ -1,0 +1,30 @@
+---
+title: "Cloudflareでbun使えないじゃん！！！と思ったらBuild Systemが古いだけでした"
+createdAt: 2023/12/3
+description: "Cloudflareでbunが使えないと思ってnカ月。。原因はBuild System Versionが1のままなことでした。。。 "
+layout: "../../../layouts/PostLayout.astro"
+---
+
+import { Image } from "astro:assets";
+import buildSystemVersionPng from "./_build_system_version.png";
+
+Cloudflareでbunが使えないと思ってnカ月。。原因は`Build System Version`が1のままなことでした。。。
+
+<Image
+  src={buildSystemVersionPng}
+  alt="Build System Versionが1のままだった"
+  width={974}
+  height={405}
+  decoding="async"
+  loading="lazy"
+/>
+
+`Build System Version`を2にしたらbunコマンドが動作するようになりました🎉
+
+## Build System Versionとは？
+
+要は内部で使っているランタイムのバージョンとOSのバージョンが上がったとのこと。
+
+ランタイムのバージョンに至っては BUN_VERSION のような環境変数を指定することで指定したバージョンをインストールすることができるとのこと。
+
+https://developers.cloudflare.com/pages/platform/language-support-and-tools/

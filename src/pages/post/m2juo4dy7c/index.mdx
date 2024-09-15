@@ -1,0 +1,161 @@
+---
+title: "Next.js13 (or React18)でreact-google-maps/apiのMarkerが表示されない"
+createdAt: 2023/2/1
+description: "Next.js13でreact-google-maps/apiのMarkerが表示されない問題の解決策の備忘録です。"
+layout: "../../../layouts/PostLayout.astro"
+---
+
+import { Image } from "astro:assets";
+import successPinPng from "./_google_map_pin2.png";
+import failedPinPng from "./_google_map_pin.png";
+
+## 初めに
+
+Next.js 13で`react-google-maps/api` を用いてGoogle Map APIを使用していたところ、`Marker`が表示されませんでした。。
+
+今回はこの問題の解決法の備忘録を書きます。
+
+## 結論
+
+React 18以降では`Marker`の代わりに`MarkerF`を使う。
+
+## 実際のコード
+
+## 動かなかったコード
+
+```typescript
+/** @format */
+
+import { GoogleMap, Marker, useLoadScript } from '@react-google-maps/api'
+import { useCallback, useRef } from 'react'
+
+const mapContainerStyle = {
+  height: '60vh',
+  width: '100%',
+}
+
+const Map = () => {
+  const { isLoaded, loadError } = useLoadScript({
+    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY!,
+    language: 'ja',
+  })
+  const mapRef = useRef<google.maps.Map>()
+  const onMapLoad = useCallback((map: google.maps.Map) => {
+    mapRef.current = map
+  }, [])
+
+  const onLoad = (marker: google.maps.Marker) => {
+    console.log('marker: ', marker)
+  }
+
+  if (loadError) return 'Error'
+  if (!isLoaded) return 'Load中'
+  return (
+      <GoogleMap
+        id='map'
+        mapContainerStyle={mapContainerStyle}
+        zoom={8}
+        center={{
+          lat: 43.048225,
+          lng: 141.49701,
+        }}
+        //onLoad={onMapLoad}
+      >
+        <Marker
+          position={{
+            lat: 43,
+            lng: 141,
+          }}
+          onLoad={onLoad}
+        />
+      </GoogleMap>
+  )
+}
+export default Map
+```
+
+### 動かなかった場合の実行結果
+
+<Image
+  src={failedPinPng}
+  alt="ピンが表示されていない"
+  width={1492}
+  height={602}
+  decoding="async"
+  loading="lazy"
+/>
+
+## 動いたコード
+
+```typescript
+/** @format */
+
+import { GoogleMap, MarkerF, useLoadScript } from '@react-google-maps/api'
+import { useCallback, useRef } from 'react'
+
+const mapContainerStyle = {
+  height: '60vh',
+  width: '100%',
+}
+
+const Map = () => {
+  const { isLoaded, loadError } = useLoadScript({
+    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY!,
+    language: 'ja',
+  })
+  const mapRef = useRef<google.maps.Map>()
+  const onMapLoad = useCallback((map: google.maps.Map) => {
+    mapRef.current = map
+  }, [])
+
+  const onLoad = (marker: google.maps.Marker) => {
+    console.log('marker: ', marker)
+  }
+
+  if (loadError) return 'Error'
+  if (!isLoaded) return 'Load中'
+  return (
+      <GoogleMap
+        id='map'
+        mapContainerStyle={mapContainerStyle}
+        zoom={8}
+        center={{
+          lat: 43.048225,
+          lng: 141.49701,
+        }}
+        //onLoad={onMapLoad}
+      >
+        <MarkerF
+          position={{
+            lat: 43,
+            lng: 141,
+          }}
+          onLoad={onLoad}
+        />
+      </GoogleMap>
+  )
+}
+export default Map
+```
+
+### 動いた場合の実行結果
+
+<Image
+  src={successPinPng}
+  alt="ピンが表示された"
+  width={1498}
+  height={600}
+  decoding="async"
+  loading="lazy"
+/>
+
+- `Marker`を使った場合、地図上にマーカーが表示されませんでした。
+- `MarkerF`に変更したところ、正常にマーカーが表示されました。
+
+本当に`Marker`を`MarkerF`にしただけで動きました、、。
+
+## まとめ
+
+コンソールを見てもリファレンスを見ても全くわからなかったので、解決方法を教えてくださった以下のStack Overflowの記事には超絶感謝です、、。
+
+[Stack Overflow: Marker not showing react-google-maps-api on localhost Next.js](https://stackoverflow.com/questions/72112491/marker-not-showing-react-google-maps-api-on-localhost-next-js)
