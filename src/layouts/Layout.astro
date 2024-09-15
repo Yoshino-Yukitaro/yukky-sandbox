@@ -9,13 +9,15 @@ export interface Props {
 }
 
 const { title, description, ogType } = Astro.props;
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 ---
 
 <!DOCTYPE html>
-<html lang="ja" prefix="og: https://ogp.me/ns#">
-  <head>
+<html lang="ja">
+  <head prefix=`og: https://ogp.me/ns# fb: http://ogp.me/ns/fb# ${ogType === 'article' ? "article: http://ogp.me/ns/article#" : ""}`>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
     <meta name="generator" content={Astro.generator} />
     <title>{title} | ゆっきーの砂場</title>
     <meta content={description} name="description" />
@@ -26,17 +28,20 @@ const { title, description, ogType } = Astro.props;
     <meta property="og:site_name" content="ゆっきーの砂場" />
     <meta property="og:locale" content="ja_JP" />
     <meta property="twitter:site" content="@Yu_yukk_Y" />
+    <meta name="msapplication-config" content="/browserconfig.xml">
     <link rel="apple-touch-icon" sizes="120x120" href="/apple-touch-icon.png" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
     <link rel="manifest" href="/site.webmanifest" />
-    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5" />
-    <meta name="msapplication-TileColor" content="#da532c" />
-    <meta name="theme-color" content="#ffffff" />
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#fefce8" />
+    <meta name="msapplication-TileImage" content="/mstile-150x150.png"/>
+    <meta name="msapplication-TileImage" content="#fefce8" />
+    <meta name="theme-color" content="#fefce8" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preload" as="style" fetchpriority="high" href="https://fonts.googleapis.com/css2?family=Reggae+One&display=swap&text=ゆっきーの砂場" >
     <link href="https://fonts.googleapis.com/css2?family=Reggae+One&display=swap&text=ゆっきーの砂場" rel="stylesheet" media="print" onload='this.media=""'>
+    <link rel="canonical" href={canonicalURL}>
     <script defer>
       if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
           document.documentElement.classList.add('dark')
