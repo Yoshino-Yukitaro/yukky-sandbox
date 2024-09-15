@@ -11,7 +11,7 @@ export default function (plop) {
         path: `src/pages/post/${pathname}/index.md`,
         templateFile: "plop-templates/blog/index.md.hbs",
         data: {
-          createdAt: today.toLocaleDateString(),
+          createdAt: `${today.getFullYear()}/${today.getMonth() + 1}/${today.getDate()}`,
         },
       },
     ],
