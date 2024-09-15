@@ -12,6 +12,7 @@ export default function (plop) {
         templateFile: "plop-templates/blog/index.md.hbs",
         data: {
           createdAt: `${today.getFullYear()}/${today.getMonth() + 1}/${today.getDate()}`,
+          pathname,
         },
       },
     ],
