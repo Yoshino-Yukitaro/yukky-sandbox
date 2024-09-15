@@ -8,11 +8,11 @@
 
 ### パッケージ管理
 
-- pnpm 8.6.0
+- bun v1.1.27
 
 ### メイン
 
-- Astro v2.9.7
+- Astro v4.15.6
 - tailwindcss v3.3.3
 
 ### テスト
@@ -34,7 +34,7 @@
 
 - microCMS のアカウント
 - microCMS の API Key
-- pnpm 8.6 系
+- bun 1.1 系
 
 ### 手順
 
@@ -48,7 +48,7 @@ git clone git@github.com:Yoshino-Yukitaro/yukky-sandbox.git
 
 ```shell
 cd yukky-sandbox
-pnpm i
+bun i
 ```
 
 #### .env ファイルを追加、更新する
@@ -62,7 +62,7 @@ echo "MICROCMS_API_KEY=${microcmsのAPI Key}" >> ./.env
 #### 起動してみる
 
 ```shell
-pnpm run dev
+bun run dev
 ```
 
 `http://localhost:4321`にアクセス
