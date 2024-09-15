@@ -2,6 +2,8 @@
 title: "転職して1ヶ月が経過した"
 createdAt: 2023/6/11
 description: "転職して1ヶ月が経過したため、転職活動中のことや今感じていること・思っていることをまとめてみます！"
+link: https://yukky-sandbox.dev/post/0h2p5w7rfh
+pubDate: 2023/6/11
 layout: "../../../layouts/PostLayout.astro"
 ---
 

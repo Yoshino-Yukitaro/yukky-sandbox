@@ -2,6 +2,8 @@
 title: "2023年の目標50本"
 createdAt: 2023/1/9
 description: "今年の目標を50本立てました！！達成できるように頑張ろう！！"
+link: https://yukky-sandbox.dev/post/4d4y1g2up
+pubDate: 2023/1/9
 layout: "../../../layouts/PostLayout.astro"
 ---
 
