@@ -2,6 +2,16 @@ name: Playwright Tests
 on:
   pull_request:
     branches: [main, develop]
+    paths:
+      - "**.astro"
+      - "**.ts"
+      - "**.tsx"
+      - "**.mdx"
+      - "**.json"
+      - "**.yml"
+      - "**.yaml"
+    paths-ignore:
+      - ".vscode"
 jobs:
   test:
     timeout-minutes: 60
