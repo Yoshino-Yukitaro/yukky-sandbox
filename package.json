@@ -7,9 +7,14 @@
     "dev": "TAILWIND_MODE=watch astro dev",
     "start": "astro dev",
     "build": "astro build",
-    "preview": "astro preview",
+    "preview:astro": "astro preview",
     "astro": "astro",
-    "gen-blog": "plop blog"
+    "gen-blog": "plop blog",
+    "preview:cf": "wrangler pages dev ./dist --compatibility-flags='nodejs_compat'"
+  },
+  "browser": {
+    "fs": false,
+    "child_process": false
   },
   "dependencies": {
     "@astrojs/cloudflare": "11.0.4",
