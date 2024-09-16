@@ -19,7 +19,11 @@ export default defineConfig({
     },
   },
   output: "hybrid",
-  adapter: cloudflare({ mode: "directory" }),
+  adapter: cloudflare({
+    mode: "directory",
+    functionPerRoute: true,
+    imageService: "compile",
+  }),
   build: {
     inlineStylesheets: "auto",
   },
