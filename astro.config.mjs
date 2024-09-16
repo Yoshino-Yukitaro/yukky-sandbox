@@ -17,9 +17,6 @@ export default defineConfig({
     optimizeDeps: {
       exclude: ["fsevents"],
     },
-    ssr: {
-      external: ["node:buffer"],
-    },
   },
   output: "hybrid",
   adapter: cloudflare(),
