@@ -15,7 +15,7 @@ export default defineConfig({
   site: "https://yukky-sandbox.dev/",
   vite: {
     optimizeDeps: {
-      exclude: ["fsevents"],
+      exclude: ["fsevents", "@cloudflare/pages-plugin-vercel-og"],
     },
   },
   output: "hybrid",
