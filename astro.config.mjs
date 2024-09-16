@@ -19,9 +19,7 @@ export default defineConfig({
     },
   },
   output: "hybrid",
-  adapter: cloudflare({
-    mode: "directory",
-  }),
+  adapter: cloudflare({ mode: "directory" }),
   build: {
     inlineStylesheets: "auto",
   },
