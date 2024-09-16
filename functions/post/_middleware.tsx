@@ -101,27 +101,27 @@ const getFontData = async (url: string): Promise<ArrayBuffer> => {
   return await fetch(resource[1]).then(async (res) => await res.arrayBuffer());
 };
 
-export const onRequest = async () => {
-  const notoSansJpUrl = `https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@600`;
-  const reggeaeOneUlr =
-    "https://fonts.googleapis.com/css2?family=Reggae+One&display=swap&text=ゆっきーの砂場";
-  const notoSansJpFontData = await getFontData(notoSansJpUrl);
-  const reggeaeOneFontData = await getFontData(reggeaeOneUlr);
-  return vercelOGPagesPlugin<OgImageProps>({
-    imagePathSuffix: "/og-image.png",
-    component: ({ ogTitle }) => {
-      return <OgImage ogTitle={ogTitle} />;
+export const onRequest = vercelOGPagesPlugin<OgImageProps>({
+  imagePathSuffix: "/og-image.png",
+  component: ({ ogTitle }) => {
+    return <OgImage ogTitle={ogTitle} />;
+  },
+  extractors: {
+    on: {
+      'meta[property="og:title"]': (props) => ({
+        element(element) {
+          props.ogTitle = element.getAttribute("content");
+        },
+      }),
     },
-    extractors: {
-      on: {
-        'meta[property="og:title"]': (props) => ({
-          element(element) {
-            props.ogTitle = element.getAttribute("content");
-          },
-        }),
-      },
-    },
-    options: {
+  },
+  options: async () => {
+    const notoSansJpUrl = `https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@600`;
+    const reggeaeOneUlr =
+      "https://fonts.googleapis.com/css2?family=Reggae+One&display=swap&text=ゆっきーの砂場";
+    const notoSansJpFontData = await getFontData(notoSansJpUrl);
+    const reggeaeOneFontData = await getFontData(reggeaeOneUlr);
+    return {
       width: 800,
       height: 400,
       fonts: [
@@ -136,9 +136,9 @@ export const onRequest = async () => {
           style: "normal",
         },
       ],
-    },
-    autoInject: {
-      openGraph: true,
-    },
-  });
-};
+    };
+  },
+  autoInject: {
+    openGraph: true,
+  },
+});
