@@ -1,5 +1,5 @@
 import React from "react";
-import vercelOGPagesPlugin from "@cloudflare/pages-plugin-vercel-og";
+import { ImageResponse } from "@cloudflare/pages-plugin-vercel-og/api";
 
 interface OgImageProps {
   ogTitle: string;
@@ -104,44 +104,26 @@ const getFontData = async (url: string): Promise<ArrayBuffer> => {
   return await fetch(resource[1]).then(async (res) => await res.arrayBuffer());
 };
 
-export const onRequest = async () => {
+export const onRequest = async (context) => {
   const notoSansJpUrl = `https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@600`;
   const reggeaeOneUlr =
     "https://fonts.googleapis.com/css2?family=Reggae+One&display=swap&text=ゆっきーの砂場";
   const notoSansJpFontData = await getFontData(notoSansJpUrl);
   const reggeaeOneFontData = await getFontData(reggeaeOneUlr);
-  return vercelOGPagesPlugin<OgImageProps>({
-    imagePathSuffix: "/og-image.png",
-    component: ({ ogTitle }) => {
-      return <OgImage ogTitle={ogTitle} />;
-    },
-    extractors: {
-      on: {
-        'meta[property="og:title"]': (props) => ({
-          element(element) {
-            props.ogTitle = element.getAttribute("content");
-          },
-        }),
+  return new ImageResponse(<OgImage ogTitle={context.params.ogtitle} />, {
+    width: 800,
+    height: 400,
+    fonts: [
+      {
+        name: "Noto Sans JP",
+        data: notoSansJpFontData,
+        style: "normal",
       },
-    },
-    options: {
-      width: 800,
-      height: 400,
-      fonts: [
-        {
-          name: "Noto Sans JP",
-          data: notoSansJpFontData,
-          style: "normal",
-        },
-        {
-          name: "Reggae One",
-          data: reggeaeOneFontData,
-          style: "normal",
-        },
-      ],
-    },
-    autoInject: {
-      openGraph: true,
-    },
+      {
+        name: "Reggae One",
+        data: reggeaeOneFontData,
+        style: "normal",
+      },
+    ],
   });
 };
