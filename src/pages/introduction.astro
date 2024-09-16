@@ -1,6 +1,6 @@
 ---
 export const prerender = true;
-import { Image } from "astro:assets";
+import { Picture } from "astro:assets";
 import Layout from "../layouts/Layout.astro";
 import glaceon from "../images/glaceon.png";
 import twitterLikeBird from "../images/twitter_like_bird.png";
@@ -13,7 +13,7 @@ import qiita from "../images/qiita.png";
   <article class="flex flex-col justify-center text-center p-2">
     <h1 class="text-5xl p-10 dark:text-white">自己紹介</h1>
     <span class="flex justify-center"
-      ><Image src={glaceon} alt="ゆっきーのアイコン" width="150" height="150" class="align-center" fetchpriority="high" decoding="async" loading="eager" />
+      ><Picture src={glaceon} formats={['avif', 'webp']} alt="ゆっきーのアイコン" width="150" height="150" class="align-center" fetchpriority="high" decoding="async" loading="eager" />
     </span>
     <h3 class="text-4xl p-5 dark:text-white">ゆっきー</h3>
     <div>
@@ -26,7 +26,8 @@ import qiita from "../images/qiita.png";
         <li>
           <h3>Twitter</h3>
           <a href="https://twitter.com/Yu_yukk_Y">
-            <Image src={twitterLikeBird}
+            <Picture src={twitterLikeBird}
+            formats={['avif', 'webp']}
             alt="twitterアカウント"
             width="100"
             height="90"
@@ -36,7 +37,8 @@ import qiita from "../images/qiita.png";
         <li>
           <h3>Bluesky</h3>
           <a href="https://bsky.app/profile/yuyukky.bsky.social">
-            <Image src={soraAozora} alt="Blueskyアカウント"
+            <Picture src={soraAozora} alt="Blueskyアカウント"
+            formats={['avif', 'webp']}
             width="100"
             height="84"
             class="m-auto py-8 hover:opacity-50" decoding="async" loading="eager" />
@@ -45,7 +47,8 @@ import qiita from "../images/qiita.png";
         <li>
           <h3>Github</h3>
           <a href="https://github.com/Yoshino-Yukitaro" class="text-center">
-            <Image src={githubMark} alt="githubアカウント"
+            <Picture src={githubMark} alt="githubアカウント"
+            formats={['avif', 'webp']}
             width="100"
             height="100"
             class="m-auto py-8 hover:opacity-50" decoding="async" loading="eager" />
@@ -54,7 +57,8 @@ import qiita from "../images/qiita.png";
         <li>
           <h3>Qiita</h3>
           <a href="https://qiita.com/Yu_yukk_Y">
-            <Image src={qiita} alt="qiitaアカウント"
+            <Picture src={qiita} alt="qiitaアカウント"
+            formats={['avif', 'webp']}
             width="100"
             height="100"
             class="m-auto py-8 hover:opacity-50" decoding="async" loading="eager" />

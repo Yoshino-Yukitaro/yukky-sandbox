@@ -1,19 +1,19 @@
 ---
 title: "Cloudflareでbun使えないじゃん！！！と思ったらBuild Systemが古いだけでした"
-createdAt: 2023/12/3
+createdAt: "2023-12-03"
 description: "Cloudflareでbunが使えないと思ってnカ月。。原因はBuild System Versionが1のままなことでした。。。 "
 link: https://yukky-sandbox.dev/post/4sdndar2n
-pubDate: 2023/12/3
-layout: "../../../layouts/PostLayout.astro"
+pubDate: "2023-12-03"
 ---
 
-import { Image } from "astro:assets";
-import buildSystemVersionPng from "./_build_system_version.png";
+import { Picture } from "astro:assets";
+import buildSystemVersionPng from "../../images/post/4sdndar2n/_build_system_version.png";
 
 Cloudflareでbunが使えないと思ってnカ月。。原因は`Build System Version`が1のままなことでした。。。
 
-<Image
+<Picture
   src={buildSystemVersionPng}
+  formats={["avif", "webp"]}
   alt="Build System Versionが1のままだった"
   width={974}
   height={405}

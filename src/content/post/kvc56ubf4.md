@@ -1,10 +1,9 @@
 ---
 title: "isucon13で無力さを実感したので来年に向けてできることをまとめていく(随時更新)"
-createdAt: 2023/12/3
+createdAt: "2023-12-03"
 description: "来年のisuconに向けた自分用のメモです。今年はほとんど何もできなかったけど次こそは、、！"
 link: https://yukky-sandbox.dev/post/kvc56ubf4
-pubDate: 2023/12/3
-layout: "../../../layouts/PostLayout.astro"
+pubDate: "2023-12-03"
 ---
 
 ## はじめに

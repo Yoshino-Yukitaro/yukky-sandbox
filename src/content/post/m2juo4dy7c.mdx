@@ -1,15 +1,14 @@
 ---
 title: "Next.js13 (or React18)でreact-google-maps/apiのMarkerが表示されない"
-createdAt: 2023/2/1
+createdAt: "2023-02-01"
 description: "Next.js13でreact-google-maps/apiのMarkerが表示されない問題の解決策の備忘録です。"
 link: https://yukky-sandbox.dev/post/m2juo4dy7c
-pubDate: 2023/2/1
-layout: "../../../layouts/PostLayout.astro"
+pubDate: "2023-02-01"
 ---
 
-import { Image } from "astro:assets";
-import successPinPng from "./_google_map_pin2.png";
-import failedPinPng from "./_google_map_pin.png";
+import { Picture } from "astro:assets";
+import successPinPng from "../../images/post/m2juo4dy7c/_google_map_pin2.png";
+import failedPinPng from "../../images/post/m2juo4dy7c/_google_map_pin.png";
 
 ## 初めに
 
@@ -78,8 +77,9 @@ export default Map
 
 ### 動かなかった場合の実行結果
 
-<Image
+<Picture
   src={failedPinPng}
+  formats={["avif", "webp"]}
   alt="ピンが表示されていない"
   width={1492}
   height={602}
@@ -142,7 +142,8 @@ export default Map
 
 ### 動いた場合の実行結果
 
-<Image
+<Picture
+  formats={["avif", "webp"]}
   src={successPinPng}
   alt="ピンが表示された"
   width={1498}
