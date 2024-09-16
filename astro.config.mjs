@@ -22,7 +22,11 @@ export default defineConfig({
   adapter: cloudflare({
     mode: "directory",
     functionPerRoute: true,
-    imageService: "compile",
+    routes: {
+      extend: {
+        include: [{ pattern: "/*" }],
+      },
+    },
   }),
   build: {
     inlineStylesheets: "auto",
