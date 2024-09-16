@@ -1,5 +1,6 @@
 ---
 import PostCard from "../molecules/PostCard.astro";
+import { getCollection } from 'astro:content';
 
 interface Frontmatter {
   title: string;
@@ -9,19 +10,19 @@ interface Frontmatter {
   date: number;
 }
 
-const posts = await Astro.glob('../../pages/post/**/*.{md,mdx}')
+const posts = await getCollection('post');
 ---
 
 <article class="w-full py-5">
   <h1 class="text-center text-4xl font-bold py-5 dark:text-white">記事一覧</h1>
   <div class="md:rounded-3x dark:bg-neutral-700 p-5">
     {
-      posts.sort((postA, postB) => { return new Date(postA.frontmatter.createdAt) < new Date(postB.frontmatter.createdAt) ? 1 : -1 }).map((post) => (
+      posts.sort((postA, postB) => { return new Date(postA.data.createdAt) < new Date(postB.data.createdAt) ? 1 : -1 }).map((post) => (
         <PostCard
-          title={post.frontmatter.title}
-          description={post.frontmatter.description}
-          createdAt={post.frontmatter.createdAt}
-          url={post.url}
+          title={post.data.title}
+          description={post.data.description}
+          createdAt={post.data.createdAt}
+          url={`/post/${post.slug}`}
         />
       ))
     }

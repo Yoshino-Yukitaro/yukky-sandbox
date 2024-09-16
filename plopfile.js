@@ -1,6 +1,9 @@
+import { format } from "@formkit/tempo";
+
 export default function (plop) {
   const today = new Date();
-  const pathname = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}-${today.getMilliseconds()}`;
+  const createdAt = format(today, "YYYY-MM-DD");
+  const pathname = `${createdAt}-${today.getMilliseconds()}`;
 
   plop.setGenerator("blog", {
     description: "blog post",
@@ -8,10 +11,10 @@ export default function (plop) {
     actions: [
       {
         type: "add",
-        path: `src/pages/post/${pathname}/index.md`,
+        path: `src/content/post/${pathname}.md`,
         templateFile: "plop-templates/blog/index.md.hbs",
         data: {
-          createdAt: `${today.getFullYear()}/${today.getMonth() + 1}/${today.getDate()}`,
+          createdAt,
           pathname,
         },
       },

@@ -1,10 +1,9 @@
 ---
 title: "初めての投稿~このブログを作った経緯~"
-createdAt: 2022/12/19
+createdAt: "2022-12-19"
 description: "このブログの初めての投稿です。このブログを作った経緯とか、これから何に使うのかとかについて説明しています。今後ともよろしくお願いします。"
 link: https://yukky-sandbox.dev/post/fw7_gmrn2w
-pubDate: 2022/12/19
-layout: "../../../layouts/PostLayout.astro"
+pubDate: "2022-12-19"
 ---
 
 ## はじめに
