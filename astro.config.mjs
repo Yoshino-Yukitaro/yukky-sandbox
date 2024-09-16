@@ -20,7 +20,7 @@ export default defineConfig({
   },
   output: "hybrid",
   adapter: cloudflare({
-    mode: "directory",
+    mode: "advanced",
     functionPerRoute: true,
     routes: {
       extend: {
