@@ -24,7 +24,7 @@ export default defineConfig({
     functionPerRoute: true,
     routes: {
       extend: {
-        include: [{ pattern: "/*" }],
+        include: [{ pattern: "/post/*" }, { pattern: "/greet" }],
       },
     },
   }),
