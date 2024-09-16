@@ -101,7 +101,7 @@ const getFontData = async (url: string): Promise<ArrayBuffer> => {
   return await fetch(resource[1]).then(async (res) => await res.arrayBuffer());
 };
 
-export const onRequest = vercelOGPagesPlugin<OgImageProps>({
+export const onRequest: PagesFunction = vercelOGPagesPlugin<OgImageProps>({
   imagePathSuffix: "/og-image.png",
   component: ({ ogTitle }) => {
     return <OgImage ogTitle={ogTitle} />;
@@ -110,7 +110,7 @@ export const onRequest = vercelOGPagesPlugin<OgImageProps>({
     on: {
       'meta[property="og:title"]': (props) => ({
         element(element) {
-          props.ogTitle = element.getAttribute("content");
+          props.ogTitle = element.getAttribute("content") ?? "ゆっきーの砂場";
         },
       }),
     },
