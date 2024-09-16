@@ -82,7 +82,6 @@ const OgImage = ({ ogTitle }: OgImageProps): JSX.Element => {
     </div>
   );
 };
-
 const getFontData = async (url: string): Promise<ArrayBuffer> => {
   const css = await (
     await fetch(url, {
@@ -92,11 +91,9 @@ const getFontData = async (url: string): Promise<ArrayBuffer> => {
       },
     })
   ).text();
-
   const resource = css.match(
     /src: url\((.+)\) format\('(opentype|truetype)'\)/
   );
-
   if (resource === null) {
     throw new Error("Font resource not found");
   }
