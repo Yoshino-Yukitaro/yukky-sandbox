@@ -7,11 +7,8 @@ on:
       - "**.ts"
       - "**.tsx"
       - "**.mdx"
-      - "**.json"
       - "**.yml"
       - "**.yaml"
-    paths-ignore:
-      - ".vscode"
 jobs:
   test:
     timeout-minutes: 60
