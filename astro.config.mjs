@@ -15,19 +15,11 @@ export default defineConfig({
   site: "https://yukky-sandbox.dev/",
   vite: {
     optimizeDeps: {
-      exclude: ["fsevents", "@cloudflare/pages-plugin-vercel-og"],
+      exclude: ["fsevents"],
     },
   },
   output: "hybrid",
-  adapter: cloudflare({
-    mode: "advanced",
-    functionPerRoute: true,
-    routes: {
-      extend: {
-        include: [{ pattern: "/post/*" }, { pattern: "/greet" }],
-      },
-    },
-  }),
+  adapter: cloudflare({}),
   build: {
     inlineStylesheets: "auto",
   },
