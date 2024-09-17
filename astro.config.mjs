@@ -15,11 +15,11 @@ export default defineConfig({
   site: "https://yukky-sandbox.dev/",
   vite: {
     optimizeDeps: {
-      exclude: ["fsevents"],
+      exclude: ["fsevents", "sharp"],
     },
   },
   output: "hybrid",
-  adapter: cloudflare({}),
+  adapter: cloudflare({ functionPerRoute: true }),
   build: {
     inlineStylesheets: "auto",
   },

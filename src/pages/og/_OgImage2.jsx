@@ -1,11 +1,7 @@
-import satori from "satori";
-import sharp = require("sharp");
+const satori = require("satori");
+const sharp = require("sharp");
 
-interface OgImageProps {
-  text: string;
-}
-
-const OgImage = ({ text }: OgImageProps): JSX.Element => {
+const OgImage = ({ text }) => {
   return (
     <div
       style={{
@@ -82,7 +78,7 @@ const OgImage = ({ text }: OgImageProps): JSX.Element => {
     </div>
   );
 };
-export async function getOgImage(text: string): Promise<Buffer> {
+export async function getOgImage(text) {
   const notoSansJpUrl = `https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@600`;
   const reggeaeOneUlr =
     "https://fonts.googleapis.com/css2?family=Reggae+One&display=swap&text=ゆっきーの砂場";
@@ -108,7 +104,7 @@ export async function getOgImage(text: string): Promise<Buffer> {
   return await sharp(Buffer.from(svg)).png().toBuffer();
 }
 
-const getFontData = async (url: string): Promise<ArrayBuffer> => {
+const getFontData = async (url) => {
   const css = await (
     await fetch(url, {
       headers: {
