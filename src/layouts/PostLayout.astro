@@ -5,13 +5,14 @@ export interface Props {
   title: string;
   description: string;
   createdAt: string;
+  slug: string;
 }
-const { title, description, createdAt } = Astro.props;
+const { title, description, createdAt, slug } = Astro.props;
 const OG_TYPE = "article";
 const dateTypeCreatedAt = new Date(createdAt);
 ---
 
-<Layout title={title} description={description} ogType={OG_TYPE}>
+<Layout title={title} description={description} ogType={OG_TYPE} ogImageUrl={`https://yukky-sandbox.dev/og/${slug}.png`} >
   <article
     class="mt-5 pt-5 lg:w-1/2 bg-amber-50 dark:bg-gray-500 w-full"
   >
