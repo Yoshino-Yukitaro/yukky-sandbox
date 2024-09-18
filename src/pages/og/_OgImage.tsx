@@ -13,7 +13,7 @@ export const OgImage = ({ text }: OgImageProps): JSX.Element => {
         alignItems: "center",
         justifyContent: "center",
         backgroundColor: "#713f12",
-        fontSize: 12,
+        fontSize: 16,
         fontWeight: 600,
         padding: "32px 48px",
         color: "rgb(0,0,0,.7)",
@@ -71,7 +71,9 @@ export const OgImage = ({ text }: OgImageProps): JSX.Element => {
             </svg>
             ゆっきー
           </h2>
-          <h2 style={{ color: "#713f12", fontFamily: "Reggae One" }}>
+          <h2
+            style={{ color: "#713f12", fontFamily: "Reggae One", fontSize: 28 }}
+          >
             ゆっきーの砂場
           </h2>
         </div>
