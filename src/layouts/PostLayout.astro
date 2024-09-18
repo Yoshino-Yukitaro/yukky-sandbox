@@ -18,10 +18,10 @@ const ogImageUrl = ogEnv === 'production' ? `https://yukky-sandbox.dev/og/${slug
   <article
     class="mt-5 pt-5 lg:w-1/2 bg-amber-50 dark:bg-gray-500 w-full"
   >
-    <h1 class="md:text-5xl text-3xl px-6 py-5 font-bold dark:text-white">
+    <h1 class="md:text-5xl text-3xl px-6 py-5 font-bold text-black dark:text-white text-opacity-70 dark:text-opacity-100">
       {title}
     </h1>
-    <p class="px-6 pb-10 dark:text-white">
+    <p class="px-6 pb-10 text-black dark:text-white text-opacity-70 dark:text-opacity-100">
       {
         `${dateTypeCreatedAt.getFullYear()}年${
           dateTypeCreatedAt.getMonth() + 1
@@ -30,9 +30,17 @@ const ogImageUrl = ogEnv === 'production' ? `https://yukky-sandbox.dev/og/${slug
     </p>
     <span class="content-center place-content-center">
       <section
-        class="m-auto prose dark:prose-invert dark:prose-pre:dark:bg-slate-700 md:prose-h2:text-4xl prose-h2:text-2xl md:prose-h3:text-3xl prose-h3:text-xl prose-h2:border-b-yellow-700 prose-h2:border-b-2 prose-h2:font-semibold prose-h3:border-l-8 prose-h3:border-l-orange-500 prose-h3:pl-2 prose-p:text-lg font-sans px-8 pt-10 prose-img:w-full prose-a:break-all md:rounded-3xl bg-white dark:bg-neutral-700 pb-8"
+        class="m-auto prose dark:prose-invert dark:prose-pre:dark:bg-slate-700 md:prose-h2:text-4xl prose-h2:text-2xl md:prose-h3:text-3xl prose-h3:text-xl prose-h2:border-b-yellow-700 prose-h2:border-b-2 prose-h2:font-semibold prose-h3:border-l-8 prose-h3:border-l-orange-500 prose-h3:pl-2 prose-p:text-lg font-sans px-8 pt-10 prose-img:w-full prose-a:break-all md:rounded-3xl bg-white dark:bg-neutral-700 pb-8 mb-5 shadow-md shadow-orange-100 dark:shadow-none"
       >
         <slot />
+        <div class="flex justify-end items-center gap-5 m-5">
+          <a class="twitter-share-button"
+            href={`https://twitter.com/intent/tweet?text=${title}`}
+            data-size="large">
+            Tweet
+          </a>
+          <a href="https://b.hatena.ne.jp/entry/" class="hatena-bookmark-button" data-hatena-bookmark-layout="touch" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/v4/public/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+        </div>
       </section>
     </span>
   </article>

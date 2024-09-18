@@ -14,7 +14,7 @@ const posts = await getCollection('post');
 ---
 
 <article class="w-full py-5">
-  <h1 class="text-center text-4xl font-bold py-5 dark:text-white">記事一覧</h1>
+  <h1 class="text-center text-4xl font-bold py-5 text-black dark:text-white text-opacity-70 dark:text-opacity-100">記事一覧</h1>
   <div class="md:rounded-3x dark:bg-neutral-700 p-5">
     {
       posts.sort((postA, postB) => { return new Date(postA.data.createdAt) < new Date(postB.data.createdAt) ? 1 : -1 }).map((post) => (
