@@ -35,9 +35,11 @@
     "typescript-eslint": "^7.2.0"
   },
   "devDependencies": {
+    "@cloudflare/workers-types": "^4.20240909.0",
     "@playwright/test": "^1.36.2",
     "@tailwindcss/typography": "^0.5.9",
     "@types/bun": "^1.0.8",
+    "@types/sharp": "^0.32.0",
     "eslint": "^8.46.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-config-standard-with-typescript": "^43.0.1",
