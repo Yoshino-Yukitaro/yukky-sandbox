@@ -15,7 +15,7 @@ export const OgImage = ({ text }: OgImageProps): JSX.Element => {
         backgroundColor: "#713f12",
         fontSize: 32,
         fontWeight: 600,
-        padding: "40px",
+        padding: "32px 48px",
         color: "rgb(0,0,0,.7)",
       }}
     >
