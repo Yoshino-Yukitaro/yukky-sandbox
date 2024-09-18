@@ -10,9 +10,11 @@ export interface Props {
 const { title, description, createdAt, slug } = Astro.props;
 const OG_TYPE = "article";
 const dateTypeCreatedAt = new Date(createdAt);
+const ogEnv = import.meta.env.OG_ENV
+const ogImageUrl = ogEnv === 'production' ? `https://yukky-sandbox.dev/og/${slug}.png` : ogEnv === 'preview' ? `https://develop.yukky-sandbox.dev/og/${slug}.png` : `http://localhost:4321/og/${slug}.png`
 ---
 
-<Layout title={title} description={description} ogType={OG_TYPE} ogImageUrl={`https://yukky-sandbox.dev/og/${slug}.png`} >
+<Layout title={title} description={description} ogType={OG_TYPE} ogImageUrl={ogImageUrl} >
   <article
     class="mt-5 pt-5 lg:w-1/2 bg-amber-50 dark:bg-gray-500 w-full"
   >
