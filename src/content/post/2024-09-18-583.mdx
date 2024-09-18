@@ -1,0 +1,257 @@
+---
+title: "ブログのog image自動生成を実装しました"
+createdAt: "2024-09-18"
+description: "ついにうちのブログにもog image自動生成機能が、、！この記事ではどんな方法を使用しているのか・どこでハマったかなどを紹介します"
+link: https://yukky-sandbox.dev/post/2024-09-18-583
+pubDate: "2024-09-18"
+---
+
+import { Picture } from "astro:assets";
+import vercelPlaygroundPng from "../../images/post/2024-09-18-583/vercel_playground.png";
+import ogpCheckerPng from "../../images/post/2024-09-18-583/ogp_checker.png";
+
+かなり久しぶりの更新です。。
+
+ついに、このブログにもog image自動生成が実装されました！やったー！！！🎉
+この記事では
+
+- どうな方法で自動生成しているのか
+- どこでハマったか
+
+を紹介します！
+
+## どんな方法で自動生成しているのか？
+
+[vercel/satori](https://github.com/vercel/satori)と[sharp](https://sharp.pixelplumbing.com/)を用いたSSGで生成しています！(本当はCloudflare Workerを用いてSSRで生成したかったけど、できませんでした。。。)
+[vercel/satori](https://github.com/vercel/satori)はReactコンポーネントからsvg画像を生成できるライブラリ、[sharp](https://sharp.pixelplumbing.com/)は画像の変換など画像に関するいろいろなことができるライブラリです。
+
+### 環境
+
+bun: v1.1.27
+astro: v4.15.6
+↑をCLoudflare pages上でhybrid modeで運用しています。
+
+### 実際の手順
+
+実際の手順ではこちらのブログを参考にさせていただきました！
+
+<a href="https://blog.70-10.net/posts/satori-og-image/">
+  https://blog.70-10.net/posts/satori-og-image/
+</a>
+
+ざっくり下記のような感じです！(コードは一部簡略化しています)
+
+1. AstroのReactインテグレーションをインストール
+
+[Astroの公式ドキュメント](https://docs.astro.build/ja/guides/integrations-guide/react/)を参考にAstroのReactインテグレーションをインストールします
+
+```shell
+bunx astro add react
+```
+
+何か聞かれたら全て`yes`と回答します。
+
+2. `satori`と`sharp`をインストール
+
+```shell
+bun add satori sharp
+```
+
+```shell
+bun add @types/sharp
+```
+
+3. og imageにするコンポーネントのデザイン調整
+
+下記のサイトを使って事前にコンポーネントのデザイン調整します。
+
+<a href="https://og-playground.vercel.app/">
+  https://og-playground.vercel.app/
+</a>
+
+<Picture
+  src={vercelPlaygroundPng}
+  formats={["avif", "webp"]}
+  alt=""
+  width={1911}
+  height={954}
+  decoding="async"
+  loading="lazy"
+/>
+
+実際に生成されるogp画像は少しレイアウトが崩れることがあるので、あくまでも参考にする程度です。
+
+4. og imageを生成する関数の作成
+
+3で作成したHTMLは事前にコンポーネントにしておきます(ここでは`_OgImage.tsx`に`OgImage`として作成しています)。
+
+(下記は`_getImage.tsx`として保存しています)
+
+```tsx
+import satori from "satori";
+import { OgImage } from "./_OgImage";
+import sharp from "sharp";
+
+export async function getOgImage(text: string): Promise<Buffer> {
+  const notoSansJpUrl = `https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@600`;
+  const reggeaeOneUlr =
+    "https://fonts.googleapis.com/css2?family=Reggae+One&display=swap&text=ゆっきーの砂場";
+  const notoSansJpFontData = await getFontData(notoSansJpUrl);
+  const reggeaeOneFontData = await getFontData(reggeaeOneUlr);
+  const svg = await satori(<OgImage text={text} />, {
+    width: 800,
+    height: 400,
+    fonts: [
+      {
+        name: "Noto Sans JP",
+        data: notoSansJpFontData,
+        style: "normal",
+      },
+      {
+        name: "Reggae One",
+        data: reggeaeOneFontData,
+        style: "normal",
+      },
+    ],
+  });
+
+  return await sharp(Buffer.from(svg)).png().toBuffer();
+}
+
+// フォントの取得
+const getFontData = async (url: string): Promise<ArrayBuffer> => {
+  const css = await (
+    await fetch(url, {
+      headers: {
+        "User-Agent":
+          "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_6_8; de-at) AppleWebKit/533.21.1 (KHTML, like Gecko) Version/5.0.5 Safari/533.21.1",
+      },
+    })
+  ).text();
+
+  const resource = css.match(
+    /src: url\((.+)\) format\('(opentype|truetype)'\)/
+  );
+
+  if (resource === null) {
+    throw new Error("Font resource not found");
+  }
+
+  return await fetch(resource[1]).then(async (res) => await res.arrayBuffer());
+};
+```
+
+自分はGoogle Fontを使いたかったので、そのフォントデータも動的に取得しています。
+
+5. og imageを配信するエンドポイントの作成
+
+AstroのSSGエンドポイントを作成します(`[...slug].png.ts`)
+
+```tsx
+import type { APIContext } from "astro";
+import { getCollection, getEntry } from "astro:content";
+import { getOgImage } from "./_getOgImage";
+
+export const getStaticPaths = async () => {
+  const posts = await getCollection("post");
+  return posts.map((post) => ({ params: { slug: post.slug } }));
+};
+
+export async function GET({ params, redirect }: APIContext) {
+  const { slug } = params;
+  if (slug === undefined) {
+    return new Response(null, {
+      status: 500,
+      statusText: "No slug provided",
+    });
+  }
+  const post = await getEntry("post", slug);
+  if (post === undefined) {
+    return new Response(null, {
+      status: 404,
+      statusText: "Not found",
+    });
+  }
+  const body = await getOgImage(post?.data.title ?? "No title");
+  return new Response(body);
+}
+```
+
+Astroでは`getStaticPaths`を定義する、または`export const prerender = true;`を追加することで静的なエンドポイントを生成することができます。
+また、ファイル名を`xxx.png.ts`のようにしてArrayBufferを返すことで画像を配信することができます。
+
+開発環境を起動して生成された画像を確かめましょう！
+
+```shell
+bun run dev
+```
+
+6. og imageを確かめる
+
+ここまでできたらmetaタグに`og:image`を追加して、実際に画像が表示されるか確認します！
+
+```jsx
+const ogImageUrl =
+  ogEnv === "production"
+    ? `https://yukky-sandbox.dev/og/${slug}.png`
+    : ogEnv === "preview"
+      ? `https://develop.yukky-sandbox.pages.dev/og/${slug}.png`
+      : `http://localhost:4321/og/${slug}.png`;
+```
+
+```jsx
+<meta property="og:image" content={ogImageUrl} />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+```
+
+確かめる際はcloudflare pagesのdev環境のURLを下記のサイトに入れて確認します
+
+<a href="https://web-toolbox.dev/tools/ogp-checker">
+  https://web-toolbox.dev/tools/ogp-checker
+</a>
+
+大体想定と違うものが表示されるので、その場合は都度調整してください！
+
+<Picture
+  src={ogpCheckerPng}
+  formats={["avif", "webp"]}
+  alt=""
+  width={1473}
+  height={626}
+  decoding="async"
+  loading="lazy"
+/>
+
+## どこでハマったか
+
+原因の調査が仕切れてないものもあるので箇条書きで書いていきます
+
+- SSRを試している時、sharpがビルドされずにローカルパッケージ扱いされてしまう
+- bun run devでは動作するが、bun build後は動作しない
+- 代替で使おうとしたresvg-jsが`nodejs compatibility`の影響で動作しない
+- cloudflareのworkerdランタイムもbunのランタイムもnodejs compatibilityが100%ではなく、使えないパッケージなどが存在する
+  - 代わりに使用しようとしたCloudflare Pages FunctionsがCloudflareアダプターの対象外になっていた -[ドキュメント](https://docs.astro.build/ja/guides/deploy/cloudflare/#pages-functions%E3%81%AE%E4%BD%BF%E7%94%A8)上ではできそうな描かれ方になっているが、実際はできない
+
+<blockquote class="twitter-tweet">
+  <p lang="ja" dir="ltr">
+    どうも少し前のバージョンのCloudflare Adapterから、Cloudflare Pages
+    Functionのサポートが消滅していたらしい🫠
+    <br />
+    代わりにAstro Endpointを使えとのこと。
+    <a href="https://t.co/wNAVImZEPC">https://t.co/wNAVImZEPC</a>
+    <br />
+    これで失敗したからPages Functionを使ってみたのにな😭
+    <a href="https://t.co/4JVkHlflJq">https://t.co/4JVkHlflJq</a>
+  </p>
+  &mdash; ゆっきー (@Yu_yukk_Y)
+  <a href="https://twitter.com/Yu_yukk_Y/status/1835832875385852150?ref_src=twsrc%5Etfw">
+    September 17, 2024
+  </a>
+</blockquote> <script
+  async
+  src="https://platform.twitter.com/widgets.js"
+  charset="utf-8"
+></script>
+
+- ↑が対象外にもかかわらず、ログ上は動いていることになっていたため調査が難航した

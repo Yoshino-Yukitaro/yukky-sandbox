@@ -1,4 +1,4 @@
-import type { APIContext, APIRoute } from "astro";
+import type { APIContext } from "astro";
 import { getCollection, getEntry } from "astro:content";
 import { getOgImage } from "./_getOgImage";
 
