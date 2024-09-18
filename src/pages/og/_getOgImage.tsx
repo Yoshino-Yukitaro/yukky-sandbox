@@ -1,7 +1,6 @@
 import satori from "satori";
 import { OgImage } from "./_OgImage";
-const sharp = require("sharp");
-// import sharp from "sharp";
+import sharp from "sharp";
 
 export async function getOgImage(text: string): Promise<Buffer> {
   const notoSansJpUrl = `https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@600`;

@@ -1,8 +1,11 @@
 import type { APIContext, APIRoute } from "astro";
-import { getEntry } from "astro:content";
+import { getCollection, getEntry } from "astro:content";
 import { getOgImage } from "./_getOgImage";
 
-export const prerender = false;
+export const getStaticPaths = async () => {
+  const posts = await getCollection("post");
+  return posts.map((post) => ({ params: { slug: post.slug } }));
+};
 
 export async function GET({ params, redirect }: APIContext) {
   const { slug } = params;
