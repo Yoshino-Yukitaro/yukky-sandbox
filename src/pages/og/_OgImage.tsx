@@ -13,7 +13,7 @@ export const OgImage = ({ text }: OgImageProps): JSX.Element => {
         alignItems: "center",
         justifyContent: "center",
         backgroundColor: "#713f12",
-        fontSize: 32,
+        fontSize: 12,
         fontWeight: 600,
         padding: "32px 48px",
         color: "rgb(0,0,0,.7)",
@@ -47,7 +47,7 @@ export const OgImage = ({ text }: OgImageProps): JSX.Element => {
               display: "flex",
               flexDirection: "row",
               alignItems: "center",
-              fontSize: 32,
+              fontSize: 24,
               gap: 10,
             }}
           >
