@@ -9,7 +9,7 @@ const { title, description, createdAt, url } = Astro.props;
 const dateTypeCreatedAt = new Date(createdAt);
 ---
 
-<section class="my-5 py-2 w-full bg-white dark:bg-gray-500 shadow-xl px-8 md:h-60 rounded-lg">
+<section class="my-5 py-2 w-full bg-white dark:bg-gray-500 drop-shadow-md dark:drop-shadow-none px-8 md:h-60 rounded-lg">
   <a href={url} class="w-full hover:opacity-50" data-astro-prefetch>
     <div class="flex flex-row justify-between pb-2 md:pb-5">
       <div class="flex flex-col">
