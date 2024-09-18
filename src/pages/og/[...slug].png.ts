@@ -1,6 +1,6 @@
 import type { APIContext, APIRoute } from "astro";
 import { getEntry } from "astro:content";
-import { getOgImage } from "./_OgImage2";
+import { getOgImage } from "./_getOgImage";
 
 export const prerender = false;
 
