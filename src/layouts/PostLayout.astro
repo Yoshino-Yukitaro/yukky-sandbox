@@ -30,9 +30,17 @@ const ogImageUrl = ogEnv === 'production' ? `https://yukky-sandbox.dev/og/${slug
     </p>
     <span class="content-center place-content-center">
       <section
-        class="m-auto prose dark:prose-invert dark:prose-pre:dark:bg-slate-700 md:prose-h2:text-4xl prose-h2:text-2xl md:prose-h3:text-3xl prose-h3:text-xl prose-h2:border-b-yellow-700 prose-h2:border-b-2 prose-h2:font-semibold prose-h3:border-l-8 prose-h3:border-l-orange-500 prose-h3:pl-2 prose-p:text-lg font-sans px-8 pt-10 prose-img:w-full prose-a:break-all md:rounded-3xl bg-white dark:bg-neutral-700 pb-8"
+        class="m-auto prose dark:prose-invert dark:prose-pre:dark:bg-slate-700 md:prose-h2:text-4xl prose-h2:text-2xl md:prose-h3:text-3xl prose-h3:text-xl prose-h2:border-b-yellow-700 prose-h2:border-b-2 prose-h2:font-semibold prose-h3:border-l-8 prose-h3:border-l-orange-500 prose-h3:pl-2 prose-p:text-lg font-sans px-8 pt-10 prose-img:w-full prose-a:break-all md:rounded-3xl bg-white dark:bg-neutral-700 pb-8 mb-5"
       >
         <slot />
+        <div class="flex justify-end items-center gap-5 m-5">
+          <a class="twitter-share-button"
+            href={`https://twitter.com/intent/tweet?text=${title}`}
+            data-size="large">
+            Tweet
+          </a>
+          <a href="https://b.hatena.ne.jp/entry/" class="hatena-bookmark-button" data-hatena-bookmark-layout="touch" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/v4/public/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+        </div>
       </section>
     </span>
   </article>
