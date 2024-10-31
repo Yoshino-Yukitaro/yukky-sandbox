@@ -1,0 +1,181 @@
+--- 
+title: "Kaigi on Rails 2024に参加しました！" 
+createdAt: "2024-10-30"
+description: "2024年10月25日(金) ~ 26日(土)に有明セントラルタワーホール & カンファレンスで開催されたKaigi on Rails 2024 の感想です！" 
+link: https://yukky-sandbox.dev/post/2024-10-30-68
+pubDate: "2024-10-30"
+---
+
+import { Picture } from "astro:assets";
+import layeredDesignForRubyOnRailsPng from "../../images/post/2024-10-30-68/layered_design_for_ruby_on_rails.png";
+import actionCableSequencePng from "../../images/post/2024-10-30-68/action_cable_sequence.png";
+import modularmonolithPng from "../../images/post/2024-10-30-68/modularmonolith.png";
+
+2024年10月25日(金) ~ 26日(土)に有明セントラルタワーホール & カンファレンスで開催されたKaigi on Rails 2024に参加してきました！
+
+Kaigi on Railsは去年に引き続き2回目の参加だったのですが、面白く、かつ明日につながるようなセッションばかりで大変有意義な時間を過ごすことができたと思っています！運営の方々に感謝です。。🙏  
+また、ブース企画や懇親会で他のRubyistと交流できたのもとても嬉しかったです！Ruby界隈の方々は新参に対してもとても優しいので、自分のようなRuby歴1年半の人間でも安心して参加できます。
+
+さて、色々得るものばかりだったこのカンファレンスですが、この記事ではその中でもセッションの感想のみに絞って書いていきたいと思います！
+
+## セッション感想
+
+### 基調講演 - RAILS WAY, OR THE HIGHWAY
+
+<a href="https://speakerdeck.com/palkan/kaigi-on-rails-2024-rails-way-or-the-highway">https://speakerdeck.com/palkan/kaigi-on-rails-2024-rails-way-or-the-highway</a>
+
+発表者がRailsでLayered Architectureを実現するための書籍の作者なこともあり、全体としては「RAILS WAYに従ってIPOまで快適に開発するにはどうすれば良いのか」といった内容になっていますが、セッション後半は「抽象化」と「関心ごとと複雑さのレベル分離」のためのRailsにおけるLayerd Architecture紹介に特化していた印象です。
+
+<Picture
+  src={layeredDesignForRubyOnRailsPng}
+  formats={["avif", "webp"]}
+  alt=""
+  width={1936}
+  height={1084}
+  decoding="async"
+  loading="lazy"
+/>
+
+しかし、RailsにおいてLayered Architectureを実現しようとするとApplication層におけるトランザクションの扱いに悩むはず。。と思いきや、よくあるLayered ArchitectureからService層が取り除かれている！？！？  
+ActiveRecordパターンを採用している以上repositoryが存在しないのはわかるのですが、Service層なしでどうやって複雑なビジネスロジックを整理するのか、正直気になりました(このセッションでは紹介されませんでした)。
+
+とりあえず「The Rails 7 Way」と「Layered Design for Ruby on Rails Application」は読んでみることにします。  
+(「Layered Design for Ruby on Rails Application」は会社の有志で一緒に読むことになりました🙌)
+
+### リリース8年目のサービスの1800個のERBファイルをViewComponentに移行した方法とその結果
+
+<a href="https://speakerdeck.com/katty0324/ririsu8nian-mu-nosabisuno1800ge-noerbhuairuwoviewcomponentniyi-xing-sitafang-fa-tosonojie-guo">https://speakerdeck.com/katty0324/ririsu8nian-mu-nosabisuno1800ge-noerbhuairuwoviewcomponentniyi-xing-sitafang-fa-tosonojie-guo</a>
+
+会社でフロントエンドのモダン化に携わっていることもあり、自分にとってタイムリーな話題でした。  
+微妙に技術スタックは異なるものの、この事例で課題に設定されていた
+
+- パラメータ定義の曖昧さ
+- 一貫性のないパラメータの渡し方
+- テンプレート内のロジックの多さ
+
+は全く同じことを感じており、全力で頷きながら聴いていました。
+
+このセッションではetbを抽象構文木に変換し適時パースしながらViewComponentに移行する、といった方法をとっており、根性頼りな方法になっていないのが素晴らしい & 大変参考になりました。  
+移行先への考え方は自分とか異なるものの、自分の担当しているプロジェクトに活かせる点は色々とありそうだと感じています。
+
+### RailsのPull requestsのレビューの時に私が考えていること
+
+<a href="https://speakerdeck.com/yahonda/railsnopull-requestsnorebiyunoshi-nisi-gakao-eteirukoto">https://speakerdeck.com/yahonda/railsnopull-requestsnorebiyunoshi-nisi-gakao-eteirukoto</a>
+
+RailsのContributorであるyahondaさんがRailsへのPRが出された際のレビュー時に考えていることを解説してくれているセッションです。
+
+仕事としてレビューしてもらう際、またはレビューする際、金銭的な契約が発生していることもあり僕らは雑なPRも出すし、出された雑なPRをレビューしてしまいがちです。コミットメッセージも同様です。
+
+OSSメンテナという金銭的な契約が発生していない人がどういった基準でレビューしているのか・最低限必要なことは何かというのを見たことで、少なくとも自分の出している日頃のPRはとてもじゃないが受け入れてもらえるレベルのものではないのがわかりました。Railsのコントリビュートをしないにしても、ある程度このセッションで述べられいるようなことに気をつけながらPRを出す・レビューすることで保守性の高いコード(とそのための仕組み作り)に貢献できそうだし、そうすべきだと感じました。
+
+### Data Migration on Rails
+
+<a href="https://speakerdeck.com/ohbarye/data-migration-on-rails">https://speakerdeck.com/ohbarye/data-migration-on-rails</a>
+
+<a href="https://github.com/Shopify/maintenance_tasks">maintenance_tasks gem</a>が便利そうでした。
+
+時々本番のRailsコンソールを経由する作業を行うことがあるのですが、やはり手動でコマンドをcp & pasteしたりするのは本番だと怖いです。  
+これらの作業をrake taskほどの手間をかけずにタスク化してサクッと行えるなら、精神的にとても楽になりそうだと感じました(まだ試してないため話を聞いて思った程度の感じですが)。
+
+### 推し活の ハイトラフィックに立ち向かう Railsとアーキテクチャ - Kaigi on Rails 2024
+
+<a href="https://speakerdeck.com/falcon8823/tui-sihuo-no-haitorahuitukunili-tixiang-kau-railstoakitekutiya-kaigi-on-rails-2024">https://speakerdeck.com/falcon8823/tui-sihuo-no-haitorahuitukunili-tixiang-kau-railstoakitekutiya-kaigi-on-rails-2024</a>
+
+High Trafficなアプリケーションの設計についての1つの案(というか実際に採択された事例)が紹介されていてとても面白かったです。
+
+特に
+
+- 商品ごとのレコードから在庫ごとのレコードに変更することで行の競合を防ぐ
+- MySQLのFOR UPDATE SKIP LOCKEDを活用する
+
+などはとても勉強になりました(FOR UPDATE SKIP LOCKEDはActiveJobのSolid Queueの中でも使用されているらしいです)。
+
+### ActionCableなら簡単？生成AIの応答をタイピングアニメーションで表示。実装、コスト削減、テスト、運用まで。
+
+<a href="https://docs.google.com/presentation/d/1sPCFlWPKmnTcc11Nt99swIJ-M056JtdK2tqHYZ18QEs/mobilepresent?slide=id.g300fd7ef164_0_33">https://docs.google.com/presentation/d/1sPCFlWPKmnTcc11Nt99swIJ-M056JtdK2tqHYZ18QEs/mobilepresent?slide=id.g300fd7ef164_0_33</a>
+
+実運用を視野に入れたActionCableの活用方法の話です。
+
+「Webソケットをproductionで採用するのは難しい！」とは何度も聞いたことはある & 考えればわかるものの、その設計パターンの解答としてクラウドにがっつり依存してインフラゴリゴリ(Redisのpub/sub、realtime databaseなど)を採用しないパターンは初めて見ました。
+
+正直Railsというより設計パターンの一つとして大変勉強になりました。
+
+<Picture
+  src={actionCableSequencePng}
+  formats={["avif", "webp"]}
+  alt=""
+  width={2766}
+  height={1552}
+  decoding="async"
+  loading="lazy"
+/>
+
+また、OpenAIのレスポンスを<a href="https://github.com/vcr/vcr">VCR gem</a>を用いて可能な限り本物に近い形でモックしてテストする、といった例もとても勉強になりました。
+
+### ActiveRecord SQLインジェクションクイズ
+
+<a href="https://speakerdeck.com/kozy4324/activerecord-sqlinziekusiyonkuizu-rails-7-dot-1-3-dot-4">https://speakerdeck.com/kozy4324/activerecord-sqlinziekusiyonkuizu-rails-7-dot-1-3-dot-4</a>
+
+タイトルの通りの内容です。
+
+orderとexists?の挙動は普通に知りませんでした。。(これ欠陥じゃないんか、、？)
+
+sanitize_sqlのlimitの挙動といい、ActiveRecordの落とし穴的な挙動どうにかならないのかな、、？😢
+
+### Identifying User Idenity
+
+<a href="https://speakerdeck.com/moro/identifying-user-idenity">https://speakerdeck.com/moro/identifying-user-idenity</a>
+
+「Users」周りのモデル(UserProfileなど、DDDにおける集約にあたるもの)の設計方法についてのセッションです。
+
+User集約におけるドメイン境界の切り方の例としてとてもわかりやすく、綺麗でした。
+
+また、よくあるDDDの設計例などとは異なり、発表者の経験に基づいていることから
+
+- パフォーマンス
+- よくあるユースケース
+
+なんかも考慮されている点が大変好印象で、勉強になりました。
+
+今後のエンジニア人生で0 → 1フェーズを担当することがあったらもう一度見直したいです🥺
+
+### 現実のRuby/Railsアップグレード
+
+<a href="https://speakerdeck.com/takeyuweb/railsatupuguredo">https://speakerdeck.com/takeyuweb/railsatupuguredo</a>
+
+発表者が他社の悲惨な環境(テストなし、古すぎるRubyとRails、本番と開発環境でRubyのバージョンがめちゃくちゃetc…)でRailsのアップグレードを行う中で得た知見について共有するセッションです。
+
+丁度会社でRailsのメジャーバージョンのアップグレードを終えた直後だったこともあり、内容の多くに共感して頷いていました(自分の所属する会社の環境はここまでひどくはないですが。。)。
+
+実際に遭遇したこと・考えたこと・実行したことがうまく言語化されており、人に伝わる発表の仕方的な観点でも勉強になりました。
+
+### サイロ化した金融システムを、packwerk を利用して無事故でリファクタリングした話
+
+<a href="https://speakerdeck.com/coincheck_recruit/sairohua-sitajin-rong-sisutemuwo-packwerk-woli-yong-sitewu-shi-gu-derihuakutaringusitahua">https://speakerdeck.com/coincheck_recruit/sairohua-sitajin-rong-sisutemuwo-packwerk-woli-yong-sitewu-shi-gu-derihuakutaringusitahua</a>
+
+散在した認可ロジックをpackwerk導入 + 擬似モジュラモノリス化で1箇所に集約し、コードをスッキリさせた話です。
+
+<Picture
+  src={modularmonolithPng}
+  formats={["avif", "webp"]}
+  alt=""
+  width={1948}
+  height={1090}
+  decoding="async"
+  loading="lazy"
+/>
+
+セッションではモジュラモノリスといっていましたが、その実態はただのモジュール分割だったような印象を受けました。
+
+セッション内でもあったようにpakcwerkはモジュラモノリス化を支援するただの静的解析ツールであり本番環境に影響しないのが魅力的に感じました(会社の環境にも部分的に欲しい。。。)。
+
+## 参加してみて
+
+正直めっちゃ楽しかったですし、エンジニアリングのモチベーションが爆上がりしました！Kaigi on Railsは
+
+> 日々の開発に役立つようなカンファレンスであるべく活動していきます
+
+と公式サイトにも書かれているように、業務に根差したセッションやそれを目的とした人が集まるので、参加をきっかけに「うちのサービスの〇〇はもっと良くできるのでは、、？」みたいな知見がたくさん得られるので参加しがいがあります！  
+ただ、1人参加は心細いので、会社からの参加者が増えるように働きかけたり、Rubyコミュニティへの接点を増やしたりして参加者の知り合いを増やしていきたいです；；
+
+また、今年はCfPを提出して落選してしまったのですが、来年こそは登壇できるように & またCfPを出せるように、日々の経験を大事にしていきます🔥
