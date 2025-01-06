@@ -18,7 +18,6 @@ export default defineConfig({
       exclude: ["fsevents"],
     },
   },
-  output: "hybrid",
   adapter: cloudflare({ imageService: "compile" }),
   build: {
     inlineStylesheets: "auto",
