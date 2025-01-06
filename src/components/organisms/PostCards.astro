@@ -22,7 +22,7 @@ const posts = await getCollection('post');
           title={post.data.title}
           description={post.data.description}
           createdAt={post.data.createdAt}
-          url={`/post/${post.slug}`}
+          url={`/post/${post.id}`}
         />
       ))
     }
