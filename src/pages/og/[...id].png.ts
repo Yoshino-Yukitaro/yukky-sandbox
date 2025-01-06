@@ -4,18 +4,18 @@ import { getOgImage } from "./_getOgImage";
 
 export const getStaticPaths = async () => {
   const posts = await getCollection("post");
-  return posts.map((post) => ({ params: { slug: post.slug } }));
+  return posts.map((post) => ({ params: { id: post.id } }));
 };
 
 export async function GET({ params, redirect }: APIContext) {
-  const { slug } = params;
-  if (slug === undefined) {
+  const { id } = params;
+  if (id === undefined) {
     return new Response(null, {
       status: 500,
       statusText: "No slug provided",
     });
   }
-  const post = await getEntry("post", slug);
+  const post = await getEntry("post", id);
   if (post === undefined) {
     return new Response(null, {
       status: 404,
