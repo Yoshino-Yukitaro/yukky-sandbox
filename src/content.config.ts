@@ -17,6 +17,7 @@ const careersCollection = defineCollection({
   schema: z.object({
     period: z.string(),
     title: z.string(),
+    company: z.string().optional(), // Added company field as optional for backward compatibility
     badgeColor: z.enum(["orange", "amber", "yellow"]),
     description: z.string(),
     isFirst: z.boolean().optional(),
