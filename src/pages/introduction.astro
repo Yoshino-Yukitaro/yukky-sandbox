@@ -10,66 +10,108 @@ import PortfolioSection from "../components/features/introduction/PortfolioSecti
 export const prerender = false; // _route.jsonが空になってしまう現象の対策 TODO: 後で削除する
 ---
 
-<!-- スタイルはコンポーネントに移動しました -->
-
 <Layout title="自己紹介" description="管理人の自己紹介ページです！">
-  <article class="flex flex-col justify-center text-center p-2">
-    <h1 class="text-5xl p-10 text-black dark:text-white text-opacity-70 dark:text-opacity-100">自己紹介</h1>
-    <span class="flex justify-center"
-      ><Picture src={glaceon} formats={['avif', 'webp']} alt="ゆっきーのアイコン" width="150" height="150" class="align-center" fetchpriority="high" decoding="async" loading="eager" />
-    </span>
-    <h3 class="text-4xl p-5 text-black dark:text-white text-opacity-70 dark:text-opacity-100">ゆっきー</h3>
-    <div>
-      <p class="p-4 dark:text-white">ポケモンと旅行、美味しい料理が好きなエンジニアです。</p>
+  <article class="flex flex-col justify-center p-2 max-w-4xl mx-auto">
+    <div class="text-center mb-8">
+      <h1 class="text-5xl p-6 text-yellow-900 dark:text-yellow-600 font-bold">自己紹介</h1>
+      <div class="flex justify-center mb-4">
+        <Picture 
+          src={glaceon} 
+          formats={['avif', 'webp']} 
+          alt="ゆっきーのアイコン" 
+          width="150" 
+          height="150" 
+          class="rounded-full border-4 border-amber-300 dark:border-amber-600" 
+          fetchpriority="high" 
+          decoding="async" 
+          loading="eager" 
+        />
+      </div>
+      <h3 class="text-3xl p-3 text-amber-800 dark:text-amber-400 font-semibold">ゆっきー</h3>
+      <p class="px-3 text-gray-700 dark:text-gray-300">ポケモンと旅行、美味しい料理が好きなエンジニアです。</p>
     </div>
-    <hr class="border-orange-500" />
+    
     <PortfolioSection />
-    <hr class="border-orange-500" />
     <div class="p-2 my-2">
       <h2 class="text-3xl p-3 text-yellow-900 dark:text-yellow-600 font-bold">Contact</h2>
-      <ul class="flex md:flex-row flex-col justify-center md:space-x-16 p-3 text-black dark:text-white text-opacity-70 dark:text-opacity-100">
-        <li>
-          <h3>Twitter</h3>
-          <a href="https://twitter.com/Yu_yukk_Y">
-            <Picture src={twitterLikeBird}
-            formats={['avif', 'webp']}
-            alt="twitterアカウント"
-            width="100"
-            height="90"
-            class="m-auto py-8 hover:opacity-50" decoding="async" loading="eager" />
+      <p class="px-3 text-gray-700 dark:text-gray-300">各種SNSアカウントのリンクです。</p>
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-6 p-4">
+        <div class="text-center">
+          <h3 class="text-lg font-semibold text-yellow-900 dark:text-amber-400 mb-3">Twitter</h3>
+          <a href="https://twitter.com/Yu_yukk_Y" class="block transition-transform hover:scale-105">
+            <Picture 
+              src={twitterLikeBird}
+              formats={['avif', 'webp']}
+              alt="twitterアカウント"
+              width="80"
+              height="72"
+              class="mx-auto hover:opacity-80 transition-opacity" 
+              decoding="async" 
+              loading="eager" 
+            />
           </a>
-        </li>
-        <li>
-          <h3>Bluesky</h3>
-          <a href="https://bsky.app/profile/yuyukky.bsky.social">
-            <Picture src={soraAozora} alt="Blueskyアカウント"
-            formats={['avif', 'webp']}
-            width="100"
-            height="84"
-            class="m-auto py-8 hover:opacity-50" decoding="async" loading="eager" />
+        </div>
+        
+        <div class="text-center">
+          <h3 class="text-lg font-semibold text-yellow-900 dark:text-amber-400 mb-3">Bluesky</h3>
+          <a href="https://bsky.app/profile/yuyukky.bsky.social" class="block transition-transform hover:scale-105">
+            <Picture 
+              src={soraAozora} 
+              alt="Blueskyアカウント"
+              formats={['avif', 'webp']}
+              width="80"
+              height="67"
+              class="mx-auto hover:opacity-80 transition-opacity" 
+              decoding="async" 
+              loading="eager" 
+            />
           </a>
-        </li>
-        <li>
-          <h3>Github</h3>
-          <a href="https://github.com/Yoshino-Yukitaro" class="text-center">
-            <Picture src={githubMark} alt="githubアカウント"
-            formats={['avif', 'webp']}
-            width="100"
-            height="100"
-            class="m-auto py-8 hover:opacity-50" decoding="async" loading="eager" />
+        </div>
+        
+        <div class="text-center">
+          <h3 class="text-lg font-semibold text-yellow-900 dark:text-amber-400 mb-3">Github</h3>
+          <a href="https://github.com/Yoshino-Yukitaro" class="block transition-transform hover:scale-105">
+            <Picture 
+              src={githubMark} 
+              alt="githubアカウント"
+              formats={['avif', 'webp']}
+              width="80"
+              height="80"
+              class="mx-auto hover:opacity-80 transition-opacity" 
+              decoding="async" 
+              loading="eager" 
+            />
           </a>
-        </li>
-        <li>
-          <h3>Qiita</h3>
-          <a href="https://qiita.com/Yu_yukk_Y">
-            <Picture src={qiita} alt="qiitaアカウント"
-            formats={['avif', 'webp']}
-            width="100"
-            height="100"
-            class="m-auto py-8 hover:opacity-50" decoding="async" loading="eager" />
+        </div>
+        
+        <div class="text-center">
+          <h3 class="text-lg font-semibold text-yellow-900 dark:text-amber-400 mb-3">Qiita</h3>
+          <a href="https://qiita.com/Yu_yukk_Y" class="block transition-transform hover:scale-105">
+            <Picture 
+              src={qiita} 
+              alt="qiitaアカウント"
+              formats={['avif', 'webp']}
+              width="80"
+              height="80"
+              class="mx-auto hover:opacity-80 transition-opacity" 
+              decoding="async" 
+              loading="eager" 
+            />
           </a>
-        </li>
-      </ul>
+        </div>
+      </div>
     </div>
   </article>
+  
+  <style>
+    /* アニメーション効果 */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    article {
+      animation: fadeIn 0.5s ease-out forwards;
+    }
+  </style>
 </Layout>
