@@ -6,6 +6,7 @@ const iconPaths = {
   frontend: "M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z",
   backend: "M2 5a2 2 0 012-2h12a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V5zm3.293 1.293a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 01-1.414-1.414L7.586 10 5.293 7.707a1 1 0 010-1.414zM11 12a1 1 0 100 2h3a1 1 0 100-2h-3z",
   infra: "M5 12a1 1 0 102 0V6.414l1.293 1.293a1 1 0 001.414-1.414l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L5 6.414V12zM15 8a1 1 0 10-2 0v5.586l-1.293-1.293a1 1 0 00-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L15 13.586V8z",
+  ai: "M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0112 15a9.065 9.065 0 00-6.23-.693L5 14.5m14.8.8l1.402 1.402c1.232 1.232.65 3.318-1.067 3.611A48.309 48.309 0 0112 21c-2.773 0-5.491-.235-8.135-.687-1.718-.293-2.3-2.379-1.067-3.61L5 14.5",
   other: "M10 3.5a1.5 1.5 0 013 0V4a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-.5a1.5 1.5 0 000 3h.5a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-.5a1.5 1.5 0 00-3 0v.5a1 1 0 01-1 1H6a1 1 0 01-1-1v-3a1 1 0 00-1-1h-.5a1.5 1.5 0 010-3H4a1 1 0 001-1V6a1 1 0 011-1h3a1 1 0 001-1v-.5z"
 };
 
@@ -20,28 +21,34 @@ const commonStyles = {
 
 const skillCategories = [
   {
-    title: "フロントエンド",
-    ...commonStyles,
-    iconPath: iconPaths.frontend,
-    skills: ["React", "Vue.js", "TypeScript", "HTML/CSS", "Tailwind CSS"]
-  },
-  {
     title: "バックエンド",
     ...commonStyles,
     iconPath: iconPaths.backend,
-    skills: ["Node.js", "Python", "Ruby on Rails", "GraphQL"]
+    skills: ["Ruby on Rails", "Python", "FastAPI", "Kotlin", "Spring Boot", "TypeScript", "Hono", "bun", "pnpm"]
+  },
+  {
+    title: "フロントエンド",
+    ...commonStyles,
+    iconPath: iconPaths.frontend,
+    skills: ["React", "Next.js", "Remix", "TypeScript", "JavaScript", "HTML/CSS", "Sass", "Tailwind CSS", "Shadcn/ui", "ChakraUI"]
   },
   {
     title: "インフラ",
     ...commonStyles,
     iconPath: iconPaths.infra,
-    skills: ["AWS", "Docker", "CI/CD", "Kubernetes"]
+    skills: ["AWS(主にサーバーサイド開発・運用まわり)", "Docker", "Terraform", "CFn", "Github Actions", "Sentry", "NewRelic", "その他監視"]
+  },
+  {
+    title: "AI",
+    ...commonStyles,
+    iconPath: iconPaths.ai,
+    skills: ["Cursor", "Windsurf", "Claude Code", "Roo Code", "Codex", "ChatGPT", "Gemini"]
   },
   {
     title: "その他",
     ...commonStyles,
     iconPath: iconPaths.other,
-    skills: ["Git", "Agile/Scrum", "UI/UX", "テスト自動化", "データ分析"]
+    skills: ["Git", "アクセシビリティ", "配色", "テスト観点"]
   }
 ];
 ---
