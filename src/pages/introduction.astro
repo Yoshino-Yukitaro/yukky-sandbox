@@ -6,8 +6,11 @@ import twitterLikeBird from "../images/twitter_like_bird.png";
 import soraAozora from "../images/sora_aozora.png";
 import githubMark from "../images/github-mark.png";
 import qiita from "../images/qiita.png";
+import PortfolioSection from "../components/features/introduction/PortfolioSection.astro";
 export const prerender = false; // _route.jsonが空になってしまう現象の対策 TODO: 後で削除する
 ---
+
+<!-- スタイルはコンポーネントに移動しました -->
 
 <Layout title="自己紹介" description="管理人の自己紹介ページです！">
   <article class="flex flex-col justify-center text-center p-2">
@@ -20,8 +23,10 @@ export const prerender = false; // _route.jsonが空になってしまう現象�
       <p class="p-4 dark:text-white">ポケモンと旅行、美味しい料理が好きなエンジニアです。</p>
     </div>
     <hr class="border-orange-500" />
+    <PortfolioSection />
+    <hr class="border-orange-500" />
     <div class="p-2 my-2">
-      <h2 class="text-3xl p-3 text-black dark:text-white text-opacity-70 dark:text-opacity-100">Contact</h2>
+      <h2 class="text-3xl p-3 text-yellow-900 dark:text-yellow-600 font-bold">Contact</h2>
       <ul class="flex md:flex-row flex-col justify-center md:space-x-16 p-3 text-black dark:text-white text-opacity-70 dark:text-opacity-100">
         <li>
           <h3>Twitter</h3>

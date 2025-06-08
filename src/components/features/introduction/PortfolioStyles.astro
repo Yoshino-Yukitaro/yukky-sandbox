@@ -1,0 +1,95 @@
+<style>
+  /* セクションカード */
+  .section-card {
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    margin-bottom: 2rem;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(245, 158, 11, 0.1);
+  }
+
+  /* セクションカードのホバー効果も削除 */
+
+  .section-header {
+    background: linear-gradient(135deg, #f97316, #f59e0b, #eab308);
+    padding: 1.25rem 1.75rem;
+    border-top-left-radius: 1rem;
+    border-top-right-radius: 1rem;
+    position: relative;
+  }
+
+  /* タイムライン */
+  .timeline-item {
+    position: relative;
+    padding-left: 2.5rem;
+    padding-bottom: 2rem;
+    border-left: 3px solid;
+    border-image: linear-gradient(to bottom, #f97316, #f59e0b, rgba(245, 158, 11, 0.3)) 1;
+    margin-left: 1rem;
+    animation: fadeIn 0.6s ease-out forwards;
+  }
+
+  .timeline-item:nth-child(2) { animation-delay: 0.2s; }
+  .timeline-item:nth-child(3) { animation-delay: 0.4s; }
+
+  .timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -0.75rem;
+    top: 0.25rem;
+    width: 1.5rem;
+    height: 1.5rem;
+    background-color: #f97316;
+    border-radius: 50%;
+    box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.2);
+    z-index: 10;
+  }
+
+  .timeline-item:last-child {
+    padding-bottom: 0;
+    border-image: linear-gradient(to bottom, #f97316, rgba(245, 158, 11, 0)) 1;
+  }
+
+  /* スキルタグ */
+  .skill-tag {
+    display: inline-flex;
+    align-items: center;
+    background-color: rgba(249, 115, 22, 0.1);
+    color: #ea580c;
+    padding: 0.5rem 1rem;
+    margin: 0 0.75rem 0.75rem 0;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    animation: fadeIn 0.4s ease-out forwards;
+  }
+
+  .skill-tag:nth-child(n) { 
+    --n: attr(data-index number, 0);
+    animation-delay: calc(0.05s * var(--n, 0)); 
+  }
+
+  /* ホバー効果を削除 */
+
+  /* ダークモード対応 */
+  :global(.dark) .skill-tag {
+    background-color: rgba(249, 115, 22, 0.2);
+    color: #fdba74;
+  }
+
+  /* ダークモードのホバー効果も削除 */
+  
+  /* アニメーション効果 */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ダークモード対応 - セクションヘッダー */
+  :global(.dark) .section-header {
+    background: linear-gradient(135deg, #c2410c, #b45309, #a16207);
+  }
+</style>

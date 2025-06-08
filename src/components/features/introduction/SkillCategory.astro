@@ -1,0 +1,27 @@
+---
+interface Props {
+  title: string;
+  iconColor: string;
+  skills: string[];
+  iconPath: string;
+}
+
+const { title, iconColor, skills, iconPath } = Astro.props;
+---
+
+<div class="mb-8">
+  <div class="flex items-center bg-orange-50 dark:bg-orange-900/20 p-3 rounded-md mb-4">
+    <div class={`p-2 rounded-md ${iconColor.replace('text-', 'bg-').replace('-500', '-100').replace('-600', '-200')} dark:bg-opacity-30 mr-3`}>
+      <svg xmlns="http://www.w3.org/2000/svg" class={`h-5 w-5 ${iconColor}`} viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d={iconPath} clip-rule="evenodd" />
+      </svg>
+    </div>
+    <h4 class="text-lg font-semibold text-yellow-900 dark:text-amber-400">{title}</h4>
+  </div>
+  
+  <div class="flex flex-wrap ml-2">
+    {skills.map(skill => (
+      <span class="skill-tag">{skill}</span>
+    ))}
+  </div>
+</div>
