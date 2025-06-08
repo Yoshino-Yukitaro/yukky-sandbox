@@ -1,0 +1,38 @@
+---
+import TimelineItem from './TimelineItem.astro';
+import SectionCard from './SectionCard.astro';
+import { getCollection } from 'astro:content';
+
+// Get all career entries and sort them by filename (which starts with the order number)
+const careerEntries = await getCollection('careers');
+const sortedCareers = careerEntries.sort((a, b) => {
+  return b.id.localeCompare(a.id);
+});
+---
+
+<SectionCard title="キャリア歴">
+  <div class="relative career-timeline">
+    <!-- Timeline vertical line -->
+    <div class="absolute left-6 top-0 bottom-0 w-1 bg-gradient-to-b from-orange-500 via-amber-500 to-yellow-500 z-0"></div>
+    
+    <div class="space-y-12">
+      {sortedCareers.map((career, index) => (
+        <TimelineItem 
+          period={career.data.period}
+          title={career.data.title}
+          company={career.data.company}
+          badgeColor={career.data.badgeColor}
+          description={career.data.description}
+          isFirst={career.data.isFirst}
+          isLast={career.data.isLast}
+        />
+      ))}
+    </div>
+  </div>
+
+  <style>
+    .career-timeline {
+      padding-left: 2rem;
+    }
+  </style>
+</SectionCard>
