@@ -1,5 +1,4 @@
 ---
-export const prerender = false; // _route.jsonが空になってしまう現象の対策 TODO: 後で削除する
 import { Picture } from "astro:assets";
 import Layout from "../layouts/Layout.astro";
 import glaceon from "../images/glaceon.png";
@@ -7,6 +6,7 @@ import twitterLikeBird from "../images/twitter_like_bird.png";
 import soraAozora from "../images/sora_aozora.png";
 import githubMark from "../images/github-mark.png";
 import qiita from "../images/qiita.png";
+export const prerender = false; // _route.jsonが空になってしまう現象の対策 TODO: 後で削除する
 ---
 
 <Layout title="自己紹介" description="管理人の自己紹介ページです！">
