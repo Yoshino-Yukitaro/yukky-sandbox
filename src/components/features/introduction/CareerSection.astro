@@ -6,7 +6,7 @@ import { getCollection } from 'astro:content';
 // Get all career entries and sort them by filename (which starts with the order number)
 const careerEntries = await getCollection('careers');
 const sortedCareers = careerEntries.sort((a, b) => {
-  return a.id.localeCompare(b.id);
+  return b.id.localeCompare(a.id);
 });
 ---
 
