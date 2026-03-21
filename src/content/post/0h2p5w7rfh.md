@@ -4,6 +4,7 @@ createdAt: "2023-06-11"
 description: "転職して1ヶ月が経過したため、転職活動中のことや今感じていること・思っていることをまとめてみます！"
 link: https://yukky-sandbox.dev/post/0h2p5w7rfh
 pubDate: "2023-06-11"
+tags: ["キャリア", "転職"]
 ---
 
 ## はじめに

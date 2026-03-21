@@ -2,29 +2,97 @@
 import PostCard from "./PostCard.astro";
 import { getCollection } from 'astro:content';
 
-interface Frontmatter {
-  title: string;
-  description: string;
-  year: number;
-  month: number;
-  date: number;
-}
-
 const posts = await getCollection('post');
+const sortedPosts = posts.sort((postA, postB) => {
+  return new Date(postA.data.createdAt) < new Date(postB.data.createdAt) ? 1 : -1;
+});
+
+// Collect all unique tags
+const allTags = [...new Set(sortedPosts.flatMap((post) => post.data.tags ?? []))].sort();
 ---
 
 <article class="w-full py-5">
   <h1 class="text-center text-4xl font-bold py-5 text-black dark:text-white text-opacity-70 dark:text-opacity-100">記事一覧</h1>
-  <div class="md:rounded-3x dark:bg-neutral-700 p-5">
+
+  {allTags.length > 0 && (
+    <div class="flex flex-wrap gap-2 mb-6 px-2">
+      <button
+        class="tag-filter-btn text-sm px-3 py-1 rounded-full border border-yellow-400 bg-yellow-400 text-yellow-900 font-medium transition-colors"
+        data-tag="__all__"
+      >
+        すべて
+      </button>
+      {allTags.map((tag) => (
+        <button
+          class="tag-filter-btn text-sm px-3 py-1 rounded-full border border-yellow-400 text-yellow-800 dark:text-yellow-200 font-medium transition-colors hover:bg-yellow-400 hover:text-yellow-900"
+          data-tag={tag}
+        >
+          #{tag}
+        </button>
+      ))}
+    </div>
+  )}
+
+  <div class="md:rounded-3x dark:bg-neutral-700 p-5" id="post-list">
     {
-      posts.sort((postA, postB) => { return new Date(postA.data.createdAt) < new Date(postB.data.createdAt) ? 1 : -1 }).map((post) => (
-        <PostCard
-          title={post.data.title}
-          description={post.data.description}
-          createdAt={post.data.createdAt}
-          url={`/post/${post.id}`}
-        />
+      sortedPosts.map((post) => (
+        <div class="post-item" data-tags={JSON.stringify(post.data.tags ?? [])}>
+          <PostCard
+            title={post.data.title}
+            description={post.data.description}
+            createdAt={post.data.createdAt}
+            url={`/post/${post.id}`}
+            tags={post.data.tags}
+          />
+        </div>
       ))
     }
   </div>
+
+  <p id="no-posts-message" class="text-center text-gray-500 dark:text-gray-400 py-10 hidden">
+    該当する記事がありません
+  </p>
 </article>
+
+<script>
+  const buttons = document.querySelectorAll<HTMLButtonElement>('.tag-filter-btn');
+  const postItems = document.querySelectorAll<HTMLElement>('.post-item');
+  const noPostsMessage = document.getElementById('no-posts-message');
+
+  let activeTag = '__all__';
+
+  function updateFilter(tag: string) {
+    activeTag = tag;
+
+    // Update button styles
+    buttons.forEach((btn) => {
+      const isActive = btn.dataset.tag === tag;
+      btn.classList.toggle('bg-yellow-400', isActive);
+      btn.classList.toggle('text-yellow-900', isActive);
+      btn.classList.remove('text-yellow-800', 'dark:text-yellow-200');
+      if (!isActive) {
+        btn.classList.add('text-yellow-800');
+      }
+    });
+
+    // Filter posts
+    let visibleCount = 0;
+    postItems.forEach((item) => {
+      const tags: string[] = JSON.parse(item.dataset.tags ?? '[]');
+      const visible = tag === '__all__' || tags.includes(tag);
+      item.style.display = visible ? '' : 'none';
+      if (visible) visibleCount++;
+    });
+
+    if (noPostsMessage) {
+      noPostsMessage.classList.toggle('hidden', visibleCount > 0);
+    }
+  }
+
+  buttons.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const tag = btn.dataset.tag ?? '__all__';
+      updateFilter(tag);
+    });
+  });
+</script>
