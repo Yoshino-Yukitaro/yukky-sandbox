@@ -4,6 +4,7 @@ createdAt: "2022-12-30"
 description: "去る2022年、今年は大学卒業に新卒入社と様々なビックイベントがありました！この記事では、そんなビックイベントの数々を振り返っていきます。"
 link: https://yukky-sandbox.dev/post/rwft75ng_3
 pubDate: "2022-12-30"
+tags: ["日記", "振り返り"]
 ---
 
 ## はじめに

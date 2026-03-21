@@ -4,8 +4,9 @@ export interface Props {
   description: string;
   createdAt: string;
   url: string;
+  tags?: string[];
 }
-const { title, description, createdAt, url } = Astro.props;
+const { title, description, createdAt, url, tags = [] } = Astro.props;
 const dateTypeCreatedAt = new Date(createdAt);
 ---
 
@@ -24,5 +25,14 @@ const dateTypeCreatedAt = new Date(createdAt);
       </div>
     </div>
     <p class="dark:text-white line-clamp-2">{description}</p>
+    {tags.length > 0 && (
+      <div class="flex flex-wrap gap-2 mt-3">
+        {tags.map((tag) => (
+          <span class="text-xs px-2 py-1 rounded-full bg-yellow-100 dark:bg-yellow-800 text-yellow-800 dark:text-yellow-100 font-medium">
+            #{tag}
+          </span>
+        ))}
+      </div>
+    )}
   </a>
 </section>
