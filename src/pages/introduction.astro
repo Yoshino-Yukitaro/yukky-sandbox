@@ -2,12 +2,13 @@
 import { Picture, getImage } from "astro:assets";
 import Layout from "../layouts/Layout.astro";
 import glaceon from "../images/glaceon.png";
-const glaceonImage = await getImage({ src: glaceon });
 import twitterLikeBird from "../images/twitter_like_bird.png";
 import soraAozora from "../images/sora_aozora.png";
 import githubMark from "../images/github-mark.png";
 import qiita from "../images/qiita.png";
 import PortfolioSection from "../components/features/introduction/PortfolioSection.astro";
+
+const glaceonImage = await getImage({ src: glaceon });
 ---
 
 <Layout title="自己紹介" description="管理人の自己紹介ページです！" preloadImageUrl={glaceonImage.src}>
