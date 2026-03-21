@@ -7,10 +7,10 @@ export interface Props {
   description: string;
   ogType?: string;
   ogImageUrl?: string;
-  preloadImageUrl?: string;
+  preloadImageUrls?: string[];
 }
 
-const { title, description, ogType, ogImageUrl, preloadImageUrl } = Astro.props;
+const { title, description, ogType, ogImageUrl, preloadImageUrls } = Astro.props;
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 ---
 
@@ -52,7 +52,7 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     <link rel="preload" as="style" fetchpriority="high" href="https://fonts.googleapis.com/css2?family=Reggae+One&display=swap&text=ゆっきーの砂場" >
     <link href="https://fonts.googleapis.com/css2?family=Reggae+One&display=swap&text=ゆっきーの砂場" rel="stylesheet" media="print" onload='this.media=""'>
     <link rel="canonical" href={canonicalURL}>
-    { preloadImageUrl && <link rel="preload" as="image" href={preloadImageUrl} fetchpriority="high" /> }
+    { preloadImageUrls?.map((url) => <link rel="preload" as="image" href={url} fetchpriority="high" />) }
     <script defer>
       if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
           document.documentElement.classList.add('dark')

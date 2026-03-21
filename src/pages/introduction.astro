@@ -11,7 +11,7 @@ import PortfolioSection from "../components/features/introduction/PortfolioSecti
 const glaceonImage = await getImage({ src: glaceon });
 ---
 
-<Layout title="自己紹介" description="管理人の自己紹介ページです！" preloadImageUrl={glaceonImage.src}>
+<Layout title="自己紹介" description="管理人の自己紹介ページです！" preloadImageUrls={[glaceonImage.src]}>
   <article class="flex flex-col justify-center p-2 max-w-4xl mx-auto">
     <div class="text-center mb-8">
       <h1 class="text-5xl p-6 text-yellow-900 dark:text-yellow-600 font-bold">自己紹介</h1>
