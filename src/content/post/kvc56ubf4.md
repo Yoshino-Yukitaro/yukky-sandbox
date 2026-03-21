@@ -4,6 +4,7 @@ createdAt: "2023-12-03"
 description: "来年のisuconに向けた自分用のメモです。今年はほとんど何もできなかったけど次こそは、、！"
 link: https://yukky-sandbox.dev/post/kvc56ubf4
 pubDate: "2023-12-03"
+tags: ["ISUCON", "技術"]
 ---
 
 ## はじめに

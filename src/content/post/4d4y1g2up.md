@@ -4,6 +4,7 @@ createdAt: "2023-01-09"
 description: "今年の目標を50本立てました！！達成できるように頑張ろう！！"
 link: https://yukky-sandbox.dev/post/4d4y1g2up
 pubDate: "2023-01-09"
+tags: ["日記", "目標"]
 ---
 
 ## MUST
