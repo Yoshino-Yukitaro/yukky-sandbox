@@ -15,22 +15,31 @@ const allTags = [...new Set(sortedPosts.flatMap((post) => post.data.tags ?? []))
   <h1 class="text-center text-4xl font-bold py-5 text-black dark:text-white text-opacity-70 dark:text-opacity-100">記事一覧</h1>
 
   {allTags.length > 0 && (
-    <div class="flex flex-wrap gap-2 mb-6 px-2">
-      <button
-        class="tag-filter-btn text-sm px-3 py-1 rounded-full border border-yellow-400 bg-yellow-400 text-yellow-900 font-medium transition-colors"
-        data-tag="__all__"
-      >
-        すべて
-      </button>
-      {allTags.map((tag) => (
+    <details class="mb-6 px-2 group" id="tag-accordion">
+      <summary class="flex items-center gap-2 cursor-pointer list-none w-fit">
+        <span id="tag-filter-label" class="text-sm font-medium text-yellow-800 dark:text-yellow-200">タグで絞り込む</span>
+        <span id="active-tag-label" class="text-sm px-3 py-1 rounded-full bg-yellow-400 text-yellow-900 font-medium hidden"></span>
+        <svg class="w-4 h-4 text-yellow-700 dark:text-yellow-300 transition-transform group-open:rotate-180" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+        </svg>
+      </summary>
+      <div class="flex flex-wrap gap-2 mt-3">
         <button
-          class="tag-filter-btn text-sm px-3 py-1 rounded-full border border-yellow-400 text-yellow-800 dark:text-yellow-200 font-medium transition-colors hover:bg-yellow-400 hover:text-yellow-900"
-          data-tag={tag}
+          class="tag-filter-btn text-sm px-3 py-1 rounded-full border border-yellow-400 bg-yellow-400 text-yellow-900 font-medium transition-colors"
+          data-tag="__all__"
         >
-          #{tag}
+          すべて
         </button>
-      ))}
-    </div>
+        {allTags.map((tag) => (
+          <button
+            class="tag-filter-btn text-sm px-3 py-1 rounded-full border border-yellow-400 text-yellow-800 dark:text-yellow-200 font-medium transition-colors hover:bg-yellow-400 hover:text-yellow-900"
+            data-tag={tag}
+          >
+            #{tag}
+          </button>
+        ))}
+      </div>
+    </details>
   )}
 
   <div class="md:rounded-3x dark:bg-neutral-700 p-5" id="post-list">
@@ -58,6 +67,7 @@ const allTags = [...new Set(sortedPosts.flatMap((post) => post.data.tags ?? []))
   const buttons = document.querySelectorAll<HTMLButtonElement>('.tag-filter-btn');
   const postItems = document.querySelectorAll<HTMLElement>('.post-item');
   const noPostsMessage = document.getElementById('no-posts-message');
+  const activeTagLabel = document.getElementById('active-tag-label');
 
   let activeTag = '__all__';
 
@@ -74,6 +84,22 @@ const allTags = [...new Set(sortedPosts.flatMap((post) => post.data.tags ?? []))
         btn.classList.add('text-yellow-800');
       }
     });
+
+    // Update active tag label shown in accordion summary
+    const accordion = document.getElementById('tag-accordion') as HTMLDetailsElement | null;
+    const tagFilterLabel = document.getElementById('tag-filter-label');
+    if (activeTagLabel) {
+      if (tag === '__all__') {
+        activeTagLabel.textContent = '';
+        activeTagLabel.classList.add('hidden');
+        tagFilterLabel?.classList.remove('hidden');
+      } else {
+        activeTagLabel.textContent = `#${tag}`;
+        activeTagLabel.classList.remove('hidden');
+        tagFilterLabel?.classList.add('hidden');
+        if (accordion) accordion.open = false;
+      }
+    }
 
     // Filter posts
     let visibleCount = 0;
