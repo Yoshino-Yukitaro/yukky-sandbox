@@ -1,5 +1,5 @@
 ---
-import { Picture } from "astro:assets";
+import { Picture, getImage } from "astro:assets";
 import Layout from "../layouts/Layout.astro";
 import glaceon from "../images/glaceon.png";
 import twitterLikeBird from "../images/twitter_like_bird.png";
@@ -7,9 +7,11 @@ import soraAozora from "../images/sora_aozora.png";
 import githubMark from "../images/github-mark.png";
 import qiita from "../images/qiita.png";
 import PortfolioSection from "../components/features/introduction/PortfolioSection.astro";
+
+const glaceonImage = await getImage({ src: glaceon });
 ---
 
-<Layout title="自己紹介" description="管理人の自己紹介ページです！">
+<Layout title="自己紹介" description="管理人の自己紹介ページです！" preloadImageUrls={[glaceonImage.src]}>
   <article class="flex flex-col justify-center p-2 max-w-4xl mx-auto">
     <div class="text-center mb-8">
       <h1 class="text-5xl p-6 text-yellow-900 dark:text-yellow-600 font-bold">自己紹介</h1>
@@ -21,9 +23,9 @@ import PortfolioSection from "../components/features/introduction/PortfolioSecti
           width="150" 
           height="150" 
           class="rounded-full border-4 border-amber-300 dark:border-amber-600" 
-          fetchpriority="high" 
-          decoding="async" 
-          loading="eager" 
+          fetchpriority="high"
+          decoding="sync"
+          loading="eager"
         />
       </div>
       <h3 class="text-3xl p-3 text-amber-800 dark:text-amber-400 font-semibold">ゆっきー</h3>
