@@ -33,43 +33,54 @@ const { glaceonSrc } = Astro.props;
   }
 
   async function createProfileTexture(avatarUrl) {
-    const W = 512, H = 640;
+    // 横長 2カラム: 左=アバター、右=情報
+    const W = 640, H = 360;
+    const PAD = 24;
+    const DIVIDER_X = 220;
+
     const canvas = document.createElement('canvas');
     canvas.width = W;
     canvas.height = H;
     const ctx = canvas.getContext('2d');
 
-    const bg = ctx.createLinearGradient(0, 0, 0, H);
+    // 背景
+    const bg = ctx.createLinearGradient(0, 0, W, H);
     bg.addColorStop(0, '#FFFBEB');
-    bg.addColorStop(1, '#FDE68A');
+    bg.addColorStop(1, '#FEF3C7');
     ctx.fillStyle = bg;
-    const r = 32;
+    const r = 28;
     ctx.beginPath();
-    ctx.moveTo(r, 0);
-    ctx.lineTo(W - r, 0);
+    ctx.moveTo(r, 0); ctx.lineTo(W - r, 0);
     ctx.quadraticCurveTo(W, 0, W, r);
     ctx.lineTo(W, H - r);
     ctx.quadraticCurveTo(W, H, W - r, H);
-    ctx.lineTo(r, H);
-    ctx.quadraticCurveTo(0, H, 0, H - r);
-    ctx.lineTo(0, r);
-    ctx.quadraticCurveTo(0, 0, r, 0);
+    ctx.lineTo(r, H); ctx.quadraticCurveTo(0, H, 0, H - r);
+    ctx.lineTo(0, r); ctx.quadraticCurveTo(0, 0, r, 0);
     ctx.fill();
 
-    const avatarR = 76;
-    const avatarCx = W / 2, avatarCy = 112;
+    // 左カラム: アバター
+    const avatarCx = DIVIDER_X / 2;
+    const avatarCy = H / 2;
+    const avatarR = 72;
+
+    // 外側グロー
+    const glow = ctx.createRadialGradient(avatarCx, avatarCy, avatarR, avatarCx, avatarCy, avatarR + 16);
+    glow.addColorStop(0, 'rgba(217,119,6,0.5)');
+    glow.addColorStop(1, 'rgba(217,119,6,0)');
+    ctx.fillStyle = glow;
     ctx.beginPath();
-    ctx.arc(avatarCx, avatarCy, avatarR + 6, 0, Math.PI * 2);
+    ctx.arc(avatarCx, avatarCy, avatarR + 16, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 枠リング
+    ctx.beginPath();
+    ctx.arc(avatarCx, avatarCy, avatarR + 5, 0, Math.PI * 2);
     ctx.fillStyle = '#D97706';
     ctx.fill();
 
     try {
       const img = new Image();
-      await new Promise((res, rej) => {
-        img.onload = res;
-        img.onerror = rej;
-        img.src = avatarUrl;
-      });
+      await new Promise((res, rej) => { img.onload = res; img.onerror = rej; img.src = avatarUrl; });
       ctx.save();
       ctx.beginPath();
       ctx.arc(avatarCx, avatarCy, avatarR, 0, Math.PI * 2);
@@ -83,45 +94,74 @@ const { glaceonSrc } = Astro.props;
       ctx.fill();
     }
 
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-
-    ctx.font = 'bold 54px sans-serif';
-    ctx.fillStyle = '#92400E';
-    ctx.fillText('ゆっきー', W / 2, 224);
-
-    ctx.font = '25px sans-serif';
-    ctx.fillStyle = '#4B5563';
-    const descLines = wrapText(ctx, 'ポケモンと旅行、美味しい料理が好きなエンジニアです。', W - 80);
-    descLines.forEach((line, i) => {
-      ctx.fillText(line, W / 2, 278 + i * 38);
-    });
-
-    const dividerY = 278 + descLines.length * 38 + 24;
-
+    // 縦区切り線
+    const grad = ctx.createLinearGradient(DIVIDER_X, PAD, DIVIDER_X, H - PAD);
+    grad.addColorStop(0, 'rgba(217,119,6,0)');
+    grad.addColorStop(0.3, '#D97706');
+    grad.addColorStop(0.7, '#D97706');
+    grad.addColorStop(1, 'rgba(217,119,6,0)');
+    ctx.strokeStyle = grad;
+    ctx.lineWidth = 1.5;
     ctx.beginPath();
-    ctx.moveTo(60, dividerY);
-    ctx.lineTo(W - 60, dividerY);
-    ctx.strokeStyle = '#D97706';
-    ctx.lineWidth = 2;
+    ctx.moveTo(DIVIDER_X, PAD);
+    ctx.lineTo(DIVIDER_X, H - PAD);
     ctx.stroke();
 
-    ctx.font = 'bold 30px sans-serif';
-    ctx.fillStyle = '#92400E';
-    ctx.fillText('Contact', W / 2, dividerY + 34);
+    // 右カラムの基準
+    const RX = DIVIDER_X + PAD;
+    const RW = W - RX - PAD;
+    let curY = PAD + 8;
 
-    ctx.font = '24px sans-serif';
-    ctx.fillStyle = '#374151';
+    // 名前
     ctx.textAlign = 'left';
-    ctx.textBaseline = 'alphabetic';
+    ctx.textBaseline = 'top';
+    ctx.font = 'bold 52px sans-serif';
+    ctx.fillStyle = '#92400E';
+    ctx.fillText('ゆっきー', RX, curY);
+    curY += 60;
+
+    // 一言
+    ctx.font = '22px sans-serif';
+    ctx.fillStyle = '#6B7280';
+    const descLines = wrapText(ctx, 'ポケモンと旅行、美味しい料理が好きなエンジニアです。', RW);
+    descLines.forEach((line) => {
+      ctx.fillText(line, RX, curY);
+      curY += 30;
+    });
+    curY += 14;
+
+    // 区切り
+    ctx.beginPath();
+    ctx.moveTo(RX, curY);
+    ctx.lineTo(W - PAD, curY);
+    ctx.strokeStyle = '#FCD34D';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+    curY += 14;
+
+    // Contact見出し
+    ctx.font = 'bold 20px sans-serif';
+    ctx.fillStyle = '#B45309';
+    ctx.fillText('Contact', RX, curY);
+    curY += 28;
+
+    // Contactアイテム
+    ctx.font = '21px sans-serif';
+    ctx.fillStyle = '#374151';
     const contacts = [
-      'Twitter:  @Yu_yukk_Y',
-      'GitHub:   Yoshino-Yukitaro',
-      'Qiita:    Yu_yukk_Y',
+      ['Twitter', '@Yu_yukk_Y'],
+      ['GitHub',  'Yoshino-Yukitaro'],
+      ['Qiita',   'Yu_yukk_Y'],
     ];
-    const itemY = dividerY + 70;
-    contacts.forEach((text, i) => {
-      ctx.fillText(text, 60, itemY + i * 50);
+    contacts.forEach(([label, value]) => {
+      ctx.fillStyle = '#92400E';
+      ctx.font = 'bold 21px sans-serif';
+      ctx.fillText(label + ':', RX, curY);
+      const labelW = ctx.measureText(label + ':  ').width;
+      ctx.fillStyle = '#374151';
+      ctx.font = '21px sans-serif';
+      ctx.fillText(value, RX + labelW, curY);
+      curY += 34;
     });
 
     return canvas.toDataURL('image/png');
@@ -216,9 +256,9 @@ const { glaceonSrc } = Astro.props;
 
       const plane = document.createElement('a-plane');
       plane.setAttribute('src', '#ar-profile-asset');
-      plane.setAttribute('width', '2.2');
-      plane.setAttribute('height', '2.75');
-      plane.setAttribute('position', '0 0 0');
+      plane.setAttribute('width', '3.5');
+      plane.setAttribute('height', '1.97');
+      plane.setAttribute('position', '0 0.01 0');
       plane.setAttribute('rotation', '-90 0 0');
       marker.appendChild(plane);
       scene.appendChild(marker);
