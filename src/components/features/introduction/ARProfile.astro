@@ -137,6 +137,29 @@ const { glaceonSrc, twitterSrc, githubSrc, qiitaSrc } = Astro.props;
     window.location.href = url.toString();
   }
 
+  function applyARViewportStyles() {
+    const fullscreenStyle = {
+      position: 'fixed',
+      inset: '0',
+      width: '100vw',
+      height: '100vh',
+      objectFit: 'cover',
+    };
+
+    document.querySelectorAll('video').forEach((video) => {
+      Object.assign(video.style, fullscreenStyle, {
+        zIndex: '1',
+        pointerEvents: 'none',
+      });
+    });
+
+    document.querySelectorAll('canvas').forEach((canvas) => {
+      Object.assign(canvas.style, fullscreenStyle, {
+        zIndex: '2',
+      });
+    });
+  }
+
   function buildARShell() {
     document.body.innerHTML = `
       <div id="ar-ui-bar" style="position:fixed;top:0;left:0;right:0;z-index:9999;display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:rgba(0,0,0,0.6);">
@@ -185,6 +208,7 @@ const { glaceonSrc, twitterSrc, githubSrc, qiitaSrc } = Astro.props;
       ].join('; '));
       scene.setAttribute('vr-mode-ui', 'enabled: false');
       scene.setAttribute('renderer', 'logarithmicDepthBuffer: true; precision: medium;');
+      scene.style.cssText = 'position:fixed;inset:0;width:100vw;height:100vh;';
 
       // ---- Assets ----
       const assets = document.createElement('a-assets');
@@ -266,11 +290,11 @@ const { glaceonSrc, twitterSrc, githubSrc, qiitaSrc } = Astro.props;
       scene.appendChild(camera);
 
       document.body.appendChild(scene);
+      applyARViewportStyles();
 
       // loaded 後に z-index 調整とマーカー監視を設定
       scene.addEventListener('loaded', () => {
-        document.querySelectorAll('video').forEach((v) => { v.style.zIndex = '1'; });
-        document.querySelectorAll('canvas').forEach((c) => { c.style.zIndex = '2'; });
+        applyARViewportStyles();
 
         const markerEl = document.getElementById('ar-marker');
         const hint = document.getElementById('ar-marker-hint');
@@ -279,6 +303,9 @@ const { glaceonSrc, twitterSrc, githubSrc, qiitaSrc } = Astro.props;
           markerEl.addEventListener('markerLost',  () => { hint.style.display = 'block'; });
         }
       });
+
+      window.addEventListener('resize', applyARViewportStyles);
+      window.addEventListener('orientationchange', applyARViewportStyles);
 
     } catch (err) {
       const loading = document.getElementById('ar-loading');
