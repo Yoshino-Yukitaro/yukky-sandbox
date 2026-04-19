@@ -160,6 +160,21 @@ const { glaceonSrc, twitterSrc, githubSrc, qiitaSrc } = Astro.props;
     });
   }
 
+  function getARViewportConfig() {
+    const displayWidth = Math.max(window.innerWidth, 1);
+    const displayHeight = Math.max(window.innerHeight, 1);
+    const pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
+    const sourceWidth = Math.round(displayWidth * pixelRatio);
+    const sourceHeight = Math.round(displayHeight * pixelRatio);
+
+    return {
+      displayWidth,
+      displayHeight,
+      sourceWidth,
+      sourceHeight,
+    };
+  }
+
   function buildARShell() {
     document.body.innerHTML = `
       <div id="ar-ui-bar" style="position:fixed;top:0;left:0;right:0;z-index:9999;display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:rgba(0,0,0,0.6);">
@@ -197,14 +212,19 @@ const { glaceonSrc, twitterSrc, githubSrc, qiitaSrc } = Astro.props;
       document.getElementById('ar-marker-hint').style.display = 'block';
 
       // ---- Scene ----
+      const { displayWidth, displayHeight, sourceWidth, sourceHeight } = getARViewportConfig();
       const scene = document.createElement('a-scene');
       scene.setAttribute('arjs', [
         'sourceType: webcam',
         'debugUIEnabled: false',
         'detectionMode: mono',
         'maxDetectionRate: 60',
-        'canvasWidth: 640',
-        'canvasHeight: 480',
+        `displayWidth: ${displayWidth}`,
+        `displayHeight: ${displayHeight}`,
+        `sourceWidth: ${sourceWidth}`,
+        `sourceHeight: ${sourceHeight}`,
+        `canvasWidth: ${sourceWidth}`,
+        `canvasHeight: ${sourceHeight}`,
       ].join('; '));
       scene.setAttribute('vr-mode-ui', 'enabled: false');
       scene.setAttribute('renderer', 'logarithmicDepthBuffer: true; precision: medium;');
