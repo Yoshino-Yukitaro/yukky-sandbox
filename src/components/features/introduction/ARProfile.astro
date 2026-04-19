@@ -1,0 +1,287 @@
+---
+interface Props {
+  glaceonSrc: string;
+}
+const { glaceonSrc } = Astro.props;
+---
+
+<div id="ar-mode-overlay" style="display:none; position:fixed; inset:0; z-index:9999; background:#000; font-family:sans-serif;">
+  <!-- Top bar -->
+  <div style="position:absolute; top:0; left:0; right:0; z-index:2; display:flex; justify-content:space-between; align-items:center; padding:12px 16px; background:rgba(0,0,0,0.6); backdrop-filter:blur(4px);">
+    <span style="color:#FEF3C7; font-size:15px; font-weight:bold; letter-spacing:0.05em;">AR プロフィール</span>
+    <button id="ar-close-btn" aria-label="ARモードを閉じる" style="color:white; background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.3); border-radius:50%; width:36px; height:36px; font-size:18px; cursor:pointer; display:flex; align-items:center; justify-content:center;">✕</button>
+  </div>
+
+  <!-- Loading indicator -->
+  <div id="ar-loading" style="position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; color:white; gap:16px; pointer-events:none;">
+    <div class="ar-spinner"></div>
+    <p style="font-size:14px; opacity:0.8; margin:0;">AR を初期化中...</p>
+  </div>
+
+  <!-- Marker hint -->
+  <div id="ar-marker-hint" style="display:none; position:absolute; bottom:24px; left:50%; transform:translateX(-50%); z-index:2; background:rgba(0,0,0,0.75); backdrop-filter:blur(8px); border:1px solid rgba(255,255,255,0.2); border-radius:16px; padding:16px 20px; text-align:center; color:white; min-width:240px; max-width:90vw;">
+    <p style="font-size:13px; margin:0 0 10px; opacity:0.9;">ゆっきーマーカーをカメラにかざしてください</p>
+    <img
+      id="ar-marker-preview"
+      alt="ゆっきーARマーカー"
+      style="width:90px; height:90px; margin:0 auto 8px; display:block; border:2px solid rgba(255,255,255,0.5); border-radius:6px; background:white; object-fit:contain; padding:4px;"
+    />
+    <p style="font-size:11px; opacity:0.6; margin:0;">自己紹介ページのアイコン画像がマーカーです</p>
+  </div>
+
+  <!-- AR scene container -->
+  <div id="ar-scene-container" style="position:absolute; inset:0;"></div>
+</div>
+
+<style>
+  @keyframes ar-spin {
+    to { transform: rotate(360deg); }
+  }
+  .ar-spinner {
+    width: 48px;
+    height: 48px;
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: ar-spin 1s linear infinite;
+  }
+</style>
+
+<script define:vars={{ glaceonSrc }}>
+  function loadScript(src) {
+    return new Promise((resolve, reject) => {
+      const script = document.createElement('script');
+      script.src = src;
+      script.onload = resolve;
+      script.onerror = reject;
+      document.head.appendChild(script);
+    });
+  }
+
+  function wrapText(ctx, text, maxWidth) {
+    const lines = [];
+    let line = '';
+    for (const char of text) {
+      const test = line + char;
+      if (ctx.measureText(test).width > maxWidth && line) {
+        lines.push(line);
+        line = char;
+      } else {
+        line = test;
+      }
+    }
+    if (line) lines.push(line);
+    return lines;
+  }
+
+  async function createProfileTexture(avatarUrl) {
+    const W = 512, H = 640;
+    const canvas = document.createElement('canvas');
+    canvas.width = W;
+    canvas.height = H;
+    const ctx = canvas.getContext('2d');
+
+    // Background gradient
+    const bg = ctx.createLinearGradient(0, 0, 0, H);
+    bg.addColorStop(0, '#FFFBEB');
+    bg.addColorStop(1, '#FDE68A');
+    ctx.fillStyle = bg;
+    const r = 32;
+    ctx.beginPath();
+    ctx.moveTo(r, 0);
+    ctx.lineTo(W - r, 0);
+    ctx.quadraticCurveTo(W, 0, W, r);
+    ctx.lineTo(W, H - r);
+    ctx.quadraticCurveTo(W, H, W - r, H);
+    ctx.lineTo(r, H);
+    ctx.quadraticCurveTo(0, H, 0, H - r);
+    ctx.lineTo(0, r);
+    ctx.quadraticCurveTo(0, 0, r, 0);
+    ctx.fill();
+
+    // Avatar border ring
+    const avatarR = 76;
+    const avatarCx = W / 2, avatarCy = 112;
+    ctx.beginPath();
+    ctx.arc(avatarCx, avatarCy, avatarR + 6, 0, Math.PI * 2);
+    ctx.fillStyle = '#D97706';
+    ctx.fill();
+
+    // Avatar image
+    try {
+      const img = new Image();
+      await new Promise((res, rej) => {
+        img.onload = res;
+        img.onerror = rej;
+        img.src = avatarUrl;
+      });
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(avatarCx, avatarCy, avatarR, 0, Math.PI * 2);
+      ctx.clip();
+      ctx.drawImage(img, avatarCx - avatarR, avatarCy - avatarR, avatarR * 2, avatarR * 2);
+      ctx.restore();
+    } catch {
+      ctx.beginPath();
+      ctx.arc(avatarCx, avatarCy, avatarR, 0, Math.PI * 2);
+      ctx.fillStyle = '#FDE68A';
+      ctx.fill();
+      ctx.font = '60px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('🧊', avatarCx, avatarCy);
+    }
+
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+
+    // Name
+    ctx.font = 'bold 54px sans-serif';
+    ctx.fillStyle = '#92400E';
+    ctx.fillText('ゆっきー', W / 2, 224);
+
+    // Description
+    ctx.font = '25px sans-serif';
+    ctx.fillStyle = '#4B5563';
+    const descLines = wrapText(ctx, 'ポケモンと旅行、美味しい料理が好きなエンジニアです。', W - 80);
+    descLines.forEach((line, i) => {
+      ctx.fillText(line, W / 2, 278 + i * 38);
+    });
+
+    const dividerY = 278 + descLines.length * 38 + 24;
+
+    // Divider
+    ctx.beginPath();
+    ctx.moveTo(60, dividerY);
+    ctx.lineTo(W - 60, dividerY);
+    ctx.strokeStyle = '#D97706';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    // Contact section title
+    ctx.font = 'bold 30px sans-serif';
+    ctx.fillStyle = '#92400E';
+    ctx.fillText('Contact', W / 2, dividerY + 34);
+
+    // Contact items
+    ctx.font = '24px sans-serif';
+    ctx.fillStyle = '#374151';
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'alphabetic';
+    const contacts = [
+      'Twitter:  @Yu_yukk_Y',
+      'GitHub:   Yoshino-Yukitaro',
+      'Qiita:    Yu_yukk_Y',
+    ];
+    const itemY = dividerY + 70;
+    contacts.forEach((text, i) => {
+      ctx.fillText(text, 60, itemY + i * 50);
+    });
+
+    return canvas.toDataURL('image/png');
+  }
+
+  function createARScene(textureUrl) {
+    const container = document.getElementById('ar-scene-container');
+
+    const scene = document.createElement('a-scene');
+    scene.setAttribute('embedded', '');
+    scene.setAttribute('arjs', 'sourceType: webcam; debugUIEnabled: false;');
+    scene.setAttribute('vr-mode-ui', 'enabled: false');
+    scene.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;';
+
+    const assets = document.createElement('a-assets');
+    const assetImg = document.createElement('img');
+    assetImg.id = 'ar-profile-asset';
+    assetImg.src = textureUrl;
+    assets.appendChild(assetImg);
+    scene.appendChild(assets);
+
+    const marker = document.createElement('a-marker');
+    marker.setAttribute('type', 'pattern');
+    marker.setAttribute('url', '/pattern-glaceon.patt');
+    marker.id = 'ar-hiro-marker';
+
+    const plane = document.createElement('a-plane');
+    plane.setAttribute('src', '#ar-profile-asset');
+    plane.setAttribute('width', '2.2');
+    plane.setAttribute('height', '2.75');
+    plane.setAttribute('position', '0 0 0');
+    plane.setAttribute('rotation', '-90 0 0');
+    marker.appendChild(plane);
+    scene.appendChild(marker);
+
+    const camera = document.createElement('a-entity');
+    camera.setAttribute('camera', '');
+    scene.appendChild(camera);
+
+    container.appendChild(scene);
+
+    // Marker visibility events (wait for AR.js to initialize)
+    setTimeout(() => {
+      const hint = document.getElementById('ar-marker-hint');
+      marker.addEventListener('markerFound', () => {
+        if (hint) hint.style.display = 'none';
+      });
+      marker.addEventListener('markerLost', () => {
+        if (hint) hint.style.display = 'block';
+      });
+    }, 3000);
+  }
+
+  async function initARMode() {
+    const overlay = document.getElementById('ar-mode-overlay');
+    overlay.style.display = 'block';
+    document.body.style.overflow = 'hidden';
+
+    document.getElementById('ar-close-btn').addEventListener('click', () => {
+      overlay.style.display = 'none';
+      document.body.style.overflow = '';
+      const scene = document.querySelector('a-scene');
+      if (scene) scene.remove();
+      arInitialized = false;
+      const url = new URL(window.location.href);
+      url.searchParams.delete('mode');
+      window.history.replaceState({}, '', url.toString());
+    });
+
+    try {
+      await loadScript('https://aframe.io/releases/1.5.0/aframe.min.js');
+      await loadScript('https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js');
+
+      const textureUrl = await createProfileTexture(glaceonSrc);
+
+      document.getElementById('ar-loading').style.display = 'none';
+      const hint = document.getElementById('ar-marker-hint');
+      const markerPreview = document.getElementById('ar-marker-preview');
+      if (markerPreview) markerPreview.src = glaceonSrc;
+      if (hint) hint.style.display = 'block';
+
+      createARScene(textureUrl);
+    } catch (err) {
+      const loading = document.getElementById('ar-loading');
+      if (loading) {
+        loading.innerHTML = '<p style="color:white;text-align:center;padding:20px;max-width:300px;">AR の読み込みに失敗しました。<br><br>カメラへのアクセスを許可してから再度お試しください。</p>';
+      }
+    }
+  }
+
+  let arInitialized = false;
+
+  function maybeInitAR() {
+    if (arInitialized) return;
+    arInitialized = true;
+    initARMode();
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('mode') === 'ar') {
+      maybeInitAR();
+    }
+  });
+
+  document.addEventListener('ar:launch', () => {
+    maybeInitAR();
+  });
+</script>

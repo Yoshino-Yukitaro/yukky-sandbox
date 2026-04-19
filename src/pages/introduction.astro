@@ -6,23 +6,45 @@ import twitterLikeBird from "../images/twitter_like_bird.png";
 import soraAozora from "../images/sora_aozora.png";
 import githubMark from "../images/github-mark.png";
 import qiita from "../images/qiita.png";
+import patternGlaceon from "../images/pattern-glaceon.png";
 import PortfolioSection from "../components/features/introduction/PortfolioSection.astro";
+import ARProfile from "../components/features/introduction/ARProfile.astro";
 
 const glaceonImage = await getImage({ src: glaceon });
+const patternGlaceonImage = await getImage({ src: patternGlaceon });
 ---
 
 <Layout title="自己紹介" description="管理人の自己紹介ページです！" preloadImageUrls={[glaceonImage.src]}>
+  <ARProfile glaceonSrc={glaceonImage.src} />
+
+  <!-- PC用モーダル -->
+  <div id="ar-pc-modal" class="hidden fixed inset-0 z-[9998] flex items-center justify-center p-4" role="dialog" aria-modal="true">
+    <div id="ar-pc-modal-backdrop" class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+    <div class="relative bg-yellow-50 dark:bg-gray-700 rounded-2xl shadow-2xl p-8 max-w-sm w-full text-center animate-modal-in">
+      <button id="ar-pc-modal-close" class="absolute top-3 right-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 text-2xl leading-none" aria-label="閉じる">✕</button>
+      <p class="text-sm text-gray-500 dark:text-gray-400 mb-1 font-medium tracking-wide">スマホで開いて</p>
+      <p class="text-xl font-bold text-amber-800 dark:text-amber-400 mb-1">このアイコンを読み取ると</p>
+      <p class="text-3xl font-black text-yellow-600 dark:text-yellow-400 mb-5 tracking-widest">、、？</p>
+      <img
+        src={patternGlaceonImage.src}
+        alt="ゆっきーARマーカー"
+        class="w-40 h-40 mx-auto rounded-xl border-4 border-amber-300 dark:border-amber-600 shadow-md object-cover"
+      />
+      <p class="mt-4 text-xs text-gray-400 dark:text-gray-500">スマホで自己紹介ページを開いて<br>このアイコンを押してみてください</p>
+    </div>
+  </div>
+
   <article class="flex flex-col justify-center p-2 max-w-4xl mx-auto">
     <div class="text-center mb-8">
       <h1 class="text-5xl p-6 text-yellow-900 dark:text-yellow-600 font-bold">自己紹介</h1>
       <div class="flex justify-center mb-4">
-        <Picture 
-          src={glaceon} 
-          formats={['avif', 'webp']} 
-          alt="ゆっきーのアイコン" 
-          width="150" 
-          height="150" 
-          class="rounded-full border-4 border-amber-300 dark:border-amber-600" 
+        <Picture
+          src={glaceon}
+          formats={['avif', 'webp']}
+          alt="ゆっきーのアイコン"
+          width="150"
+          height="150"
+          class="rounded-full border-4 border-amber-300 dark:border-amber-600"
           fetchpriority="high"
           decoding="sync"
           loading="eager"
@@ -31,7 +53,7 @@ const glaceonImage = await getImage({ src: glaceon });
       <h3 class="text-3xl p-3 text-amber-800 dark:text-amber-400 font-semibold">ゆっきー</h3>
       <p class="px-3 text-gray-700 dark:text-gray-300">ポケモンと旅行、美味しい料理が好きなエンジニアです。</p>
     </div>
-    
+
     <PortfolioSection />
     <div class="p-2 my-2">
       <h2 class="text-3xl p-3 text-yellow-900 dark:text-yellow-600 font-bold">Contact</h2>
@@ -40,63 +62,119 @@ const glaceonImage = await getImage({ src: glaceon });
         <div class="text-center">
           <h3 class="text-lg font-semibold text-yellow-900 dark:text-amber-400 mb-3">Twitter</h3>
           <a href="https://twitter.com/Yu_yukk_Y" class="block transition-transform hover:scale-105">
-            <Picture 
+            <Picture
               src={twitterLikeBird}
               formats={['avif', 'webp']}
               alt="twitterアカウント"
               width="80"
               height="72"
-              class="mx-auto hover:opacity-80 transition-opacity" 
-              decoding="async" 
-              loading="eager" 
+              class="mx-auto hover:opacity-80 transition-opacity"
+              decoding="async"
+              loading="eager"
             />
           </a>
         </div>
-        
+
         <div class="text-center">
           <h3 class="text-lg font-semibold text-yellow-900 dark:text-amber-400 mb-3">Github</h3>
           <a href="https://github.com/Yoshino-Yukitaro" class="block transition-transform hover:scale-105">
-            <Picture 
-              src={githubMark} 
+            <Picture
+              src={githubMark}
               alt="githubアカウント"
               formats={['avif', 'webp']}
               width="80"
               height="80"
-              class="mx-auto hover:opacity-80 transition-opacity" 
-              decoding="async" 
-              loading="eager" 
+              class="mx-auto hover:opacity-80 transition-opacity"
+              decoding="async"
+              loading="eager"
             />
           </a>
         </div>
-        
+
         <div class="text-center">
           <h3 class="text-lg font-semibold text-yellow-900 dark:text-amber-400 mb-3">Qiita</h3>
           <a href="https://qiita.com/Yu_yukk_Y" class="block transition-transform hover:scale-105">
-            <Picture 
-              src={qiita} 
+            <Picture
+              src={qiita}
               alt="qiitaアカウント"
               formats={['avif', 'webp']}
               width="80"
               height="80"
-              class="mx-auto hover:opacity-80 transition-opacity" 
-              decoding="async" 
-              loading="eager" 
+              class="mx-auto hover:opacity-80 transition-opacity"
+              decoding="async"
+              loading="eager"
             />
           </a>
+        </div>
+
+        <div class="text-center">
+          <h3 class="text-lg font-semibold text-yellow-900 dark:text-amber-400 mb-3">???</h3>
+          <button id="ar-contact-btn" class="block mx-auto transition-transform hover:scale-105 cursor-pointer" aria-label="ARプロフィールを体験">
+            <Picture
+              src={patternGlaceon}
+              formats={['avif', 'webp']}
+              alt="???"
+              width="80"
+              height="80"
+              class="mx-auto hover:opacity-80 transition-opacity rounded-lg"
+              decoding="async"
+              loading="lazy"
+            />
+          </button>
         </div>
       </div>
     </div>
   </article>
-  
+
+  <script>
+    const btn = document.getElementById('ar-contact-btn');
+    const modal = document.getElementById('ar-pc-modal');
+    const modalClose = document.getElementById('ar-pc-modal-close');
+    const modalBackdrop = document.getElementById('ar-pc-modal-backdrop');
+
+    function isMobile() {
+      return ('ontouchstart' in window || navigator.maxTouchPoints > 0);
+    }
+
+    btn?.addEventListener('click', () => {
+      if (isMobile()) {
+        window.history.pushState({}, '', '?mode=ar');
+        document.dispatchEvent(new CustomEvent('ar:launch'));
+      } else {
+        modal?.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+      }
+    });
+
+    function closeModal() {
+      modal?.classList.add('hidden');
+      document.body.style.overflow = '';
+    }
+
+    modalClose?.addEventListener('click', closeModal);
+    modalBackdrop?.addEventListener('click', closeModal);
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeModal();
+    });
+  </script>
+
   <style>
-    /* アニメーション効果 */
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(10px); }
       to { opacity: 1; transform: translateY(0); }
     }
-    
+
+    @keyframes modal-in {
+      from { opacity: 0; transform: scale(0.92) translateY(8px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
     article {
       animation: fadeIn 0.5s ease-out forwards;
+    }
+
+    .animate-modal-in {
+      animation: modal-in 0.2s ease-out forwards;
     }
   </style>
 </Layout>
