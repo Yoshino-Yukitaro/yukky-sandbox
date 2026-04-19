@@ -35,7 +35,7 @@ const { glaceonSrc, twitterSrc, githubSrc, qiitaSrc } = Astro.props;
     return lines;
   }
 
-  // canvas にはアバター・名前・一言のみ描画（SNS は HTML オーバーレイで別管理）
+  // canvas: アバター・名前・一言のみ（SNS は別 AR オブジェクト）
   async function createProfileTexture(avatarUrl) {
     const W = 560, H = 300;
     const PAD = 24;
@@ -46,7 +46,6 @@ const { glaceonSrc, twitterSrc, githubSrc, qiitaSrc } = Astro.props;
     canvas.height = H;
     const ctx = canvas.getContext('2d');
 
-    // 背景
     const bg = ctx.createLinearGradient(0, 0, W, H);
     bg.addColorStop(0, '#FFFBEB');
     bg.addColorStop(1, '#FEF3C7');
@@ -61,12 +60,10 @@ const { glaceonSrc, twitterSrc, githubSrc, qiitaSrc } = Astro.props;
     ctx.lineTo(0, r); ctx.quadraticCurveTo(0, 0, r, 0);
     ctx.fill();
 
-    // 左カラム: アバター
     const avatarCx = DIVIDER_X / 2;
     const avatarCy = H / 2;
     const avatarR = 68;
 
-    // グロー
     const glow = ctx.createRadialGradient(avatarCx, avatarCy, avatarR, avatarCx, avatarCy, avatarR + 18);
     glow.addColorStop(0, 'rgba(217,119,6,0.45)');
     glow.addColorStop(1, 'rgba(217,119,6,0)');
@@ -75,13 +72,11 @@ const { glaceonSrc, twitterSrc, githubSrc, qiitaSrc } = Astro.props;
     ctx.arc(avatarCx, avatarCy, avatarR + 18, 0, Math.PI * 2);
     ctx.fill();
 
-    // 枠リング
     ctx.beginPath();
     ctx.arc(avatarCx, avatarCy, avatarR + 5, 0, Math.PI * 2);
     ctx.fillStyle = '#D97706';
     ctx.fill();
 
-    // アバター画像
     try {
       const img = new Image();
       await new Promise((res, rej) => { img.onload = res; img.onerror = rej; img.src = avatarUrl; });
@@ -98,7 +93,6 @@ const { glaceonSrc, twitterSrc, githubSrc, qiitaSrc } = Astro.props;
       ctx.fill();
     }
 
-    // 縦区切り線（フェード）
     const divGrad = ctx.createLinearGradient(DIVIDER_X, PAD, DIVIDER_X, H - PAD);
     divGrad.addColorStop(0, 'rgba(217,119,6,0)');
     divGrad.addColorStop(0.25, '#D97706');
@@ -111,18 +105,15 @@ const { glaceonSrc, twitterSrc, githubSrc, qiitaSrc } = Astro.props;
     ctx.lineTo(DIVIDER_X, H - PAD);
     ctx.stroke();
 
-    // 右カラム
     const RX = DIVIDER_X + PAD;
     const RW = W - RX - PAD;
 
-    // 名前
     ctx.textAlign = 'left';
     ctx.textBaseline = 'middle';
     ctx.font = 'bold 54px sans-serif';
     ctx.fillStyle = '#92400E';
     ctx.fillText('ゆっきー', RX, H * 0.32);
 
-    // 一言（折り返し）
     ctx.font = '22px sans-serif';
     ctx.fillStyle = '#6B7280';
     const lines = wrapText(ctx, 'ポケモンと旅行、美味しい料理が好きなエンジニアです。', RW);
@@ -133,65 +124,9 @@ const { glaceonSrc, twitterSrc, githubSrc, qiitaSrc } = Astro.props;
     return canvas.toDataURL('image/png');
   }
 
-  function buildSNSBar() {
-    const bar = document.createElement('div');
-    bar.id = 'ar-sns-bar';
-    bar.style.cssText = [
-      'display:none',
-      'position:fixed',
-      'bottom:24px',
-      'left:50%',
-      'transform:translateX(-50%)',
-      'z-index:9999',
-      'background:rgba(0,0,0,0.7)',
-      'backdrop-filter:blur(8px)',
-      'border:1px solid rgba(255,255,255,0.15)',
-      'border-radius:20px',
-      'padding:12px 20px',
-      'gap:20px',
-      'align-items:center',
-    ].join(';');
-
-    const links = [
-      { href: 'https://twitter.com/Yu_yukk_Y',       src: twitterSrc, label: 'Twitter',  w: 56, h: 50 },
-      { href: 'https://github.com/Yoshino-Yukitaro', src: githubSrc,  label: 'GitHub',   w: 56, h: 56 },
-      { href: 'https://qiita.com/Yu_yukk_Y',         src: qiitaSrc,   label: 'Qiita',    w: 56, h: 56 },
-    ];
-
-    links.forEach(({ href, src, label, w, h }) => {
-      const a = document.createElement('a');
-      a.href = href;
-      a.target = '_blank';
-      a.rel = 'noopener noreferrer';
-      a.style.cssText = 'display:flex;flex-direction:column;align-items:center;gap:4px;text-decoration:none;';
-
-      const img = document.createElement('img');
-      img.src = src;
-      img.alt = label;
-      img.width = w;
-      img.height = h;
-      img.style.cssText = 'object-fit:contain;transition:transform 0.15s;';
-      img.addEventListener('touchstart', () => { img.style.transform = 'scale(1.15)'; });
-      img.addEventListener('touchend',   () => { img.style.transform = 'scale(1)'; });
-
-      const span = document.createElement('span');
-      span.textContent = label;
-      span.style.cssText = 'color:rgba(255,255,255,0.7);font-size:11px;';
-
-      a.appendChild(img);
-      a.appendChild(span);
-      bar.appendChild(a);
-    });
-
-    return bar;
-  }
-
   function stopAllCameraStreams() {
     document.querySelectorAll('video').forEach((v) => {
-      if (v.srcObject) {
-        v.srcObject.getTracks().forEach((t) => t.stop());
-        v.srcObject = null;
-      }
+      if (v.srcObject) { v.srcObject.getTracks().forEach((t) => t.stop()); v.srcObject = null; }
     });
   }
 
@@ -220,11 +155,6 @@ const { glaceonSrc, twitterSrc, githubSrc, qiitaSrc } = Astro.props;
       <style>@keyframes ar-spin{to{transform:rotate(360deg)}}</style>
     `;
     document.body.style.cssText = 'overflow:hidden;margin:0;padding:0;background:#000;';
-
-    // SNS バーをDOMに追加（初期は非表示）
-    const snsBar = buildSNSBar();
-    document.body.appendChild(snsBar);
-
     document.getElementById('ar-close-btn').addEventListener('click', closeAR);
   }
 
@@ -243,6 +173,7 @@ const { glaceonSrc, twitterSrc, githubSrc, qiitaSrc } = Astro.props;
       document.getElementById('ar-loading')?.remove();
       document.getElementById('ar-marker-hint').style.display = 'block';
 
+      // ---- Scene ----
       const scene = document.createElement('a-scene');
       scene.setAttribute('arjs', [
         'sourceType: webcam',
@@ -255,13 +186,30 @@ const { glaceonSrc, twitterSrc, githubSrc, qiitaSrc } = Astro.props;
       scene.setAttribute('vr-mode-ui', 'enabled: false');
       scene.setAttribute('renderer', 'logarithmicDepthBuffer: true; precision: medium;');
 
+      // ---- Assets ----
       const assets = document.createElement('a-assets');
-      const assetImg = document.createElement('img');
-      assetImg.id = 'ar-profile-asset';
-      assetImg.src = textureUrl;
-      assets.appendChild(assetImg);
+
+      const profileImg = document.createElement('img');
+      profileImg.id = 'ar-profile-asset';
+      profileImg.src = textureUrl;
+      assets.appendChild(profileImg);
+
+      const snsItems = [
+        { assetId: 'ar-twitter-asset', src: twitterSrc, url: 'https://twitter.com/Yu_yukk_Y',         x: -0.85 },
+        { assetId: 'ar-github-asset',  src: githubSrc,  url: 'https://github.com/Yoshino-Yukitaro',   x:  0    },
+        { assetId: 'ar-qiita-asset',   src: qiitaSrc,   url: 'https://qiita.com/Yu_yukk_Y',           x:  0.85 },
+      ];
+
+      snsItems.forEach(({ assetId, src }) => {
+        const img = document.createElement('img');
+        img.id = assetId;
+        img.src = src;
+        assets.appendChild(img);
+      });
+
       scene.appendChild(assets);
 
+      // ---- Marker ----
       const marker = document.createElement('a-marker');
       marker.setAttribute('type', 'pattern');
       marker.setAttribute('url', '/pattern-glaceon.patt');
@@ -272,39 +220,63 @@ const { glaceonSrc, twitterSrc, githubSrc, qiitaSrc } = Astro.props;
       marker.setAttribute('smoothThreshold', '5');
       marker.id = 'ar-marker';
 
-      const plane = document.createElement('a-plane');
-      plane.setAttribute('src', '#ar-profile-asset');
-      // canvas 560×300 → 約 16:9 ではなく 1.87:1
-      plane.setAttribute('width', '3.2');
-      plane.setAttribute('height', '1.71');
-      plane.setAttribute('position', '0 0.01 0');
-      plane.setAttribute('rotation', '-90 0 0');
-      marker.appendChild(plane);
+      // プロフィールカード (canvas 560×300 → 比率 1.867:1)
+      const CARD_W = 3.2, CARD_H = 1.71;
+      const profilePlane = document.createElement('a-plane');
+      profilePlane.setAttribute('src', '#ar-profile-asset');
+      profilePlane.setAttribute('width', String(CARD_W));
+      profilePlane.setAttribute('height', String(CARD_H));
+      profilePlane.setAttribute('position', '0 0.01 0');
+      profilePlane.setAttribute('rotation', '-90 0 0');
+      marker.appendChild(profilePlane);
+
+      // SNS アイコン: カード下方に横一列 (Z 軸正方向 = マーカー手前側)
+      const ICON_SIZE = 0.72;
+      const SNS_Z = CARD_H / 2 + 0.14 + ICON_SIZE / 2; // カード底辺 + gap + 半径
+
+      snsItems.forEach(({ assetId, url, x }) => {
+        const iconPlane = document.createElement('a-plane');
+        iconPlane.setAttribute('src', `#${assetId}`);
+        iconPlane.setAttribute('width',  String(ICON_SIZE));
+        iconPlane.setAttribute('height', String(ICON_SIZE));
+        iconPlane.setAttribute('position', `${x} 0.02 ${SNS_Z.toFixed(3)}`);
+        iconPlane.setAttribute('rotation', '-90 0 0');
+        iconPlane.setAttribute('class', 'ar-clickable');
+
+        // タップ時のスケールアニメーション
+        iconPlane.setAttribute('animation__enter',
+          'property: scale; to: 1.2 1.2 1; dur: 120; startEvents: mouseenter;');
+        iconPlane.setAttribute('animation__leave',
+          'property: scale; to: 1 1 1; dur: 120; startEvents: mouseleave;');
+        iconPlane.setAttribute('animation__tap',
+          'property: scale; from: 1.2 1.2 1; to: 0.85 0.85 1; dur: 80; startEvents: click;');
+
+        iconPlane.addEventListener('click', () => window.open(url, '_blank'));
+
+        marker.appendChild(iconPlane);
+      });
+
       scene.appendChild(marker);
 
+      // ---- Camera + Cursor (タップで AR オブジェクトをクリック) ----
       const camera = document.createElement('a-entity');
       camera.setAttribute('camera', '');
+      camera.setAttribute('cursor', 'rayOrigin: mouse; fuse: false;');
+      camera.setAttribute('raycaster', 'objects: .ar-clickable; far: 100;');
       scene.appendChild(camera);
 
       document.body.appendChild(scene);
 
+      // loaded 後に z-index 調整とマーカー監視を設定
       scene.addEventListener('loaded', () => {
         document.querySelectorAll('video').forEach((v) => { v.style.zIndex = '1'; });
         document.querySelectorAll('canvas').forEach((c) => { c.style.zIndex = '2'; });
 
         const markerEl = document.getElementById('ar-marker');
-        const hint    = document.getElementById('ar-marker-hint');
-        const snsBar  = document.getElementById('ar-sns-bar');
-
-        if (markerEl) {
-          markerEl.addEventListener('markerFound', () => {
-            if (hint)   hint.style.display = 'none';
-            if (snsBar) snsBar.style.display = 'flex';
-          });
-          markerEl.addEventListener('markerLost', () => {
-            if (hint)   hint.style.display = 'block';
-            if (snsBar) snsBar.style.display = 'none';
-          });
+        const hint = document.getElementById('ar-marker-hint');
+        if (markerEl && hint) {
+          markerEl.addEventListener('markerFound', () => { hint.style.display = 'none'; });
+          markerEl.addEventListener('markerLost',  () => { hint.style.display = 'block'; });
         }
       });
 
