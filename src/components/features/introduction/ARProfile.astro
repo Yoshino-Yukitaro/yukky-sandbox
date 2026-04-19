@@ -1,11 +1,14 @@
 ---
 interface Props {
   glaceonSrc: string;
+  twitterSrc: string;
+  githubSrc: string;
+  qiitaSrc: string;
 }
-const { glaceonSrc } = Astro.props;
+const { glaceonSrc, twitterSrc, githubSrc, qiitaSrc } = Astro.props;
 ---
 
-<script define:vars={{ glaceonSrc }}>
+<script define:vars={{ glaceonSrc, twitterSrc, githubSrc, qiitaSrc }}>
   function loadScript(src) {
     return new Promise((resolve, reject) => {
       const script = document.createElement('script');
@@ -32,11 +35,11 @@ const { glaceonSrc } = Astro.props;
     return lines;
   }
 
+  // canvas にはアバター・名前・一言のみ描画（SNS は HTML オーバーレイで別管理）
   async function createProfileTexture(avatarUrl) {
-    // 横長 2カラム: 左=アバター、右=情報
-    const W = 640, H = 360;
+    const W = 560, H = 300;
     const PAD = 24;
-    const DIVIDER_X = 220;
+    const DIVIDER_X = 200;
 
     const canvas = document.createElement('canvas');
     canvas.width = W;
@@ -48,7 +51,7 @@ const { glaceonSrc } = Astro.props;
     bg.addColorStop(0, '#FFFBEB');
     bg.addColorStop(1, '#FEF3C7');
     ctx.fillStyle = bg;
-    const r = 28;
+    const r = 24;
     ctx.beginPath();
     ctx.moveTo(r, 0); ctx.lineTo(W - r, 0);
     ctx.quadraticCurveTo(W, 0, W, r);
@@ -61,15 +64,15 @@ const { glaceonSrc } = Astro.props;
     // 左カラム: アバター
     const avatarCx = DIVIDER_X / 2;
     const avatarCy = H / 2;
-    const avatarR = 72;
+    const avatarR = 68;
 
-    // 外側グロー
-    const glow = ctx.createRadialGradient(avatarCx, avatarCy, avatarR, avatarCx, avatarCy, avatarR + 16);
-    glow.addColorStop(0, 'rgba(217,119,6,0.5)');
+    // グロー
+    const glow = ctx.createRadialGradient(avatarCx, avatarCy, avatarR, avatarCx, avatarCy, avatarR + 18);
+    glow.addColorStop(0, 'rgba(217,119,6,0.45)');
     glow.addColorStop(1, 'rgba(217,119,6,0)');
     ctx.fillStyle = glow;
     ctx.beginPath();
-    ctx.arc(avatarCx, avatarCy, avatarR + 16, 0, Math.PI * 2);
+    ctx.arc(avatarCx, avatarCy, avatarR + 18, 0, Math.PI * 2);
     ctx.fill();
 
     // 枠リング
@@ -78,6 +81,7 @@ const { glaceonSrc } = Astro.props;
     ctx.fillStyle = '#D97706';
     ctx.fill();
 
+    // アバター画像
     try {
       const img = new Image();
       await new Promise((res, rej) => { img.onload = res; img.onerror = rej; img.src = avatarUrl; });
@@ -94,77 +98,92 @@ const { glaceonSrc } = Astro.props;
       ctx.fill();
     }
 
-    // 縦区切り線
-    const grad = ctx.createLinearGradient(DIVIDER_X, PAD, DIVIDER_X, H - PAD);
-    grad.addColorStop(0, 'rgba(217,119,6,0)');
-    grad.addColorStop(0.3, '#D97706');
-    grad.addColorStop(0.7, '#D97706');
-    grad.addColorStop(1, 'rgba(217,119,6,0)');
-    ctx.strokeStyle = grad;
+    // 縦区切り線（フェード）
+    const divGrad = ctx.createLinearGradient(DIVIDER_X, PAD, DIVIDER_X, H - PAD);
+    divGrad.addColorStop(0, 'rgba(217,119,6,0)');
+    divGrad.addColorStop(0.25, '#D97706');
+    divGrad.addColorStop(0.75, '#D97706');
+    divGrad.addColorStop(1, 'rgba(217,119,6,0)');
+    ctx.strokeStyle = divGrad;
     ctx.lineWidth = 1.5;
     ctx.beginPath();
     ctx.moveTo(DIVIDER_X, PAD);
     ctx.lineTo(DIVIDER_X, H - PAD);
     ctx.stroke();
 
-    // 右カラムの基準
+    // 右カラム
     const RX = DIVIDER_X + PAD;
     const RW = W - RX - PAD;
-    let curY = PAD + 8;
 
     // 名前
     ctx.textAlign = 'left';
-    ctx.textBaseline = 'top';
-    ctx.font = 'bold 52px sans-serif';
+    ctx.textBaseline = 'middle';
+    ctx.font = 'bold 54px sans-serif';
     ctx.fillStyle = '#92400E';
-    ctx.fillText('ゆっきー', RX, curY);
-    curY += 60;
+    ctx.fillText('ゆっきー', RX, H * 0.32);
 
-    // 一言
+    // 一言（折り返し）
     ctx.font = '22px sans-serif';
     ctx.fillStyle = '#6B7280';
-    const descLines = wrapText(ctx, 'ポケモンと旅行、美味しい料理が好きなエンジニアです。', RW);
-    descLines.forEach((line) => {
-      ctx.fillText(line, RX, curY);
-      curY += 30;
-    });
-    curY += 14;
-
-    // 区切り
-    ctx.beginPath();
-    ctx.moveTo(RX, curY);
-    ctx.lineTo(W - PAD, curY);
-    ctx.strokeStyle = '#FCD34D';
-    ctx.lineWidth = 1.5;
-    ctx.stroke();
-    curY += 14;
-
-    // Contact見出し
-    ctx.font = 'bold 20px sans-serif';
-    ctx.fillStyle = '#B45309';
-    ctx.fillText('Contact', RX, curY);
-    curY += 28;
-
-    // Contactアイテム
-    ctx.font = '21px sans-serif';
-    ctx.fillStyle = '#374151';
-    const contacts = [
-      ['Twitter', '@Yu_yukk_Y'],
-      ['GitHub',  'Yoshino-Yukitaro'],
-      ['Qiita',   'Yu_yukk_Y'],
-    ];
-    contacts.forEach(([label, value]) => {
-      ctx.fillStyle = '#92400E';
-      ctx.font = 'bold 21px sans-serif';
-      ctx.fillText(label + ':', RX, curY);
-      const labelW = ctx.measureText(label + ':  ').width;
-      ctx.fillStyle = '#374151';
-      ctx.font = '21px sans-serif';
-      ctx.fillText(value, RX + labelW, curY);
-      curY += 34;
+    const lines = wrapText(ctx, 'ポケモンと旅行、美味しい料理が好きなエンジニアです。', RW);
+    lines.forEach((line, i) => {
+      ctx.fillText(line, RX, H * 0.58 + i * 32);
     });
 
     return canvas.toDataURL('image/png');
+  }
+
+  function buildSNSBar() {
+    const bar = document.createElement('div');
+    bar.id = 'ar-sns-bar';
+    bar.style.cssText = [
+      'display:none',
+      'position:fixed',
+      'bottom:24px',
+      'left:50%',
+      'transform:translateX(-50%)',
+      'z-index:9999',
+      'background:rgba(0,0,0,0.7)',
+      'backdrop-filter:blur(8px)',
+      'border:1px solid rgba(255,255,255,0.15)',
+      'border-radius:20px',
+      'padding:12px 20px',
+      'gap:20px',
+      'align-items:center',
+    ].join(';');
+
+    const links = [
+      { href: 'https://twitter.com/Yu_yukk_Y',       src: twitterSrc, label: 'Twitter',  w: 56, h: 50 },
+      { href: 'https://github.com/Yoshino-Yukitaro', src: githubSrc,  label: 'GitHub',   w: 56, h: 56 },
+      { href: 'https://qiita.com/Yu_yukk_Y',         src: qiitaSrc,   label: 'Qiita',    w: 56, h: 56 },
+    ];
+
+    links.forEach(({ href, src, label, w, h }) => {
+      const a = document.createElement('a');
+      a.href = href;
+      a.target = '_blank';
+      a.rel = 'noopener noreferrer';
+      a.style.cssText = 'display:flex;flex-direction:column;align-items:center;gap:4px;text-decoration:none;';
+
+      const img = document.createElement('img');
+      img.src = src;
+      img.alt = label;
+      img.width = w;
+      img.height = h;
+      img.style.cssText = 'object-fit:contain;transition:transform 0.15s;';
+      img.addEventListener('touchstart', () => { img.style.transform = 'scale(1.15)'; });
+      img.addEventListener('touchend',   () => { img.style.transform = 'scale(1)'; });
+
+      const span = document.createElement('span');
+      span.textContent = label;
+      span.style.cssText = 'color:rgba(255,255,255,0.7);font-size:11px;';
+
+      a.appendChild(img);
+      a.appendChild(span);
+      bar.appendChild(a);
+    });
+
+    return bar;
   }
 
   function stopAllCameraStreams() {
@@ -184,7 +203,6 @@ const { glaceonSrc } = Astro.props;
   }
 
   function buildARShell() {
-    // body全体をAR UIで置き換える
     document.body.innerHTML = `
       <div id="ar-ui-bar" style="position:fixed;top:0;left:0;right:0;z-index:9999;display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:rgba(0,0,0,0.6);">
         <span style="color:#FEF3C7;font-size:15px;font-weight:bold;letter-spacing:0.05em;">AR プロフィール</span>
@@ -192,7 +210,7 @@ const { glaceonSrc } = Astro.props;
       </div>
       <div id="ar-marker-hint" style="display:none;position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:9999;background:rgba(0,0,0,0.75);border:1px solid rgba(255,255,255,0.2);border-radius:16px;padding:16px 20px;text-align:center;color:white;min-width:240px;max-width:90vw;">
         <p style="font-size:13px;margin:0 0 10px;opacity:0.9;">ゆっきーマーカーをカメラにかざしてください</p>
-        <img id="ar-marker-preview" src="${glaceonSrc}" alt="ゆっきーARマーカー" style="width:90px;height:90px;margin:0 auto 8px;display:block;border:2px solid rgba(255,255,255,0.5);border-radius:6px;background:white;object-fit:contain;padding:4px;" />
+        <img src="${glaceonSrc}" alt="ゆっきーARマーカー" style="width:88px;height:88px;margin:0 auto 8px;display:block;border:2px solid rgba(255,255,255,0.5);border-radius:6px;background:white;object-fit:contain;padding:4px;" />
         <p style="font-size:11px;opacity:0.6;margin:0;">自己紹介ページのアイコン画像がマーカーです</p>
       </div>
       <div id="ar-loading" style="position:fixed;inset:0;z-index:9998;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#000;color:white;gap:16px;">
@@ -203,6 +221,10 @@ const { glaceonSrc } = Astro.props;
     `;
     document.body.style.cssText = 'overflow:hidden;margin:0;padding:0;background:#000;';
 
+    // SNS バーをDOMに追加（初期は非表示）
+    const snsBar = buildSNSBar();
+    document.body.appendChild(snsBar);
+
     document.getElementById('ar-close-btn').addEventListener('click', closeAR);
   }
 
@@ -210,12 +232,10 @@ const { glaceonSrc } = Astro.props;
     buildARShell();
 
     try {
-      // パターンファイルの疎通確認
       const pattRes = await fetch('/pattern-glaceon.patt');
       if (!pattRes.ok) throw new Error('パターンファイルの読み込みに失敗しました');
 
       await loadScript('https://aframe.io/releases/1.5.0/aframe.min.js');
-      // masterではなくバージョン固定
       await loadScript('https://raw.githack.com/AR-js-org/AR.js/3.4.5/aframe/build/aframe-ar.js');
 
       const textureUrl = await createProfileTexture(glaceonSrc);
@@ -223,7 +243,6 @@ const { glaceonSrc } = Astro.props;
       document.getElementById('ar-loading')?.remove();
       document.getElementById('ar-marker-hint').style.display = 'block';
 
-      // a-sceneをbodyに直接追加（embedded不使用でフルスクリーン）
       const scene = document.createElement('a-scene');
       scene.setAttribute('arjs', [
         'sourceType: webcam',
@@ -246,7 +265,6 @@ const { glaceonSrc } = Astro.props;
       const marker = document.createElement('a-marker');
       marker.setAttribute('type', 'pattern');
       marker.setAttribute('url', '/pattern-glaceon.patt');
-      // マーカー生成時のpatternRatioと合わせる（標準ツール=0.5）
       marker.setAttribute('patternRatio', '0.5');
       marker.setAttribute('smooth', 'true');
       marker.setAttribute('smoothCount', '10');
@@ -256,8 +274,9 @@ const { glaceonSrc } = Astro.props;
 
       const plane = document.createElement('a-plane');
       plane.setAttribute('src', '#ar-profile-asset');
-      plane.setAttribute('width', '3.5');
-      plane.setAttribute('height', '1.97');
+      // canvas 560×300 → 約 16:9 ではなく 1.87:1
+      plane.setAttribute('width', '3.2');
+      plane.setAttribute('height', '1.71');
       plane.setAttribute('position', '0 0.01 0');
       plane.setAttribute('rotation', '-90 0 0');
       marker.appendChild(plane);
@@ -269,20 +288,23 @@ const { glaceonSrc } = Astro.props;
 
       document.body.appendChild(scene);
 
-      // sceneのloadedイベントでz-indexとマーカー監視を設定
       scene.addEventListener('loaded', () => {
-        document.querySelectorAll('video').forEach((v) => {
-          v.style.zIndex = '1';
-        });
-        document.querySelectorAll('canvas').forEach((c) => {
-          c.style.zIndex = '2';
-        });
+        document.querySelectorAll('video').forEach((v) => { v.style.zIndex = '1'; });
+        document.querySelectorAll('canvas').forEach((c) => { c.style.zIndex = '2'; });
 
         const markerEl = document.getElementById('ar-marker');
-        const hint = document.getElementById('ar-marker-hint');
-        if (markerEl && hint) {
-          markerEl.addEventListener('markerFound', () => { hint.style.display = 'none'; });
-          markerEl.addEventListener('markerLost', () => { hint.style.display = 'block'; });
+        const hint    = document.getElementById('ar-marker-hint');
+        const snsBar  = document.getElementById('ar-sns-bar');
+
+        if (markerEl) {
+          markerEl.addEventListener('markerFound', () => {
+            if (hint)   hint.style.display = 'none';
+            if (snsBar) snsBar.style.display = 'flex';
+          });
+          markerEl.addEventListener('markerLost', () => {
+            if (hint)   hint.style.display = 'block';
+            if (snsBar) snsBar.style.display = 'none';
+          });
         }
       });
 

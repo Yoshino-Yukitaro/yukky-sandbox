@@ -12,10 +12,18 @@ import ARProfile from "../components/features/introduction/ARProfile.astro";
 
 const glaceonImage = await getImage({ src: glaceon });
 const patternGlaceonImage = await getImage({ src: patternGlaceon });
+const twitterImage = await getImage({ src: twitterLikeBird });
+const githubImage = await getImage({ src: githubMark });
+const qiitaImage = await getImage({ src: qiita });
 ---
 
 <Layout title="自己紹介" description="管理人の自己紹介ページです！" preloadImageUrls={[glaceonImage.src]}>
-  <ARProfile glaceonSrc={glaceonImage.src} />
+  <ARProfile
+    glaceonSrc={glaceonImage.src}
+    twitterSrc={twitterImage.src}
+    githubSrc={githubImage.src}
+    qiitaSrc={qiitaImage.src}
+  />
 
   <!-- PC用モーダル -->
   <div id="ar-pc-modal" class="hidden fixed inset-0 z-[9998] flex items-center justify-center p-4" role="dialog" aria-modal="true">
