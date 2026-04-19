@@ -163,15 +163,15 @@ const { glaceonSrc, twitterSrc, githubSrc, qiitaSrc } = Astro.props;
   function getARViewportConfig() {
     const displayWidth = Math.max(window.innerWidth, 1);
     const displayHeight = Math.max(window.innerHeight, 1);
-    const pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
-    const sourceWidth = Math.round(displayWidth * pixelRatio);
-    const sourceHeight = Math.round(displayHeight * pixelRatio);
+    const isPortrait = displayHeight >= displayWidth;
+    const baseWidth = isPortrait ? 480 : 640;
+    const baseHeight = Math.round((baseWidth * displayHeight) / displayWidth);
 
     return {
       displayWidth,
       displayHeight,
-      sourceWidth,
-      sourceHeight,
+      canvasWidth: baseWidth,
+      canvasHeight: baseHeight,
     };
   }
 
@@ -212,7 +212,7 @@ const { glaceonSrc, twitterSrc, githubSrc, qiitaSrc } = Astro.props;
       document.getElementById('ar-marker-hint').style.display = 'block';
 
       // ---- Scene ----
-      const { displayWidth, displayHeight, sourceWidth, sourceHeight } = getARViewportConfig();
+      const { displayWidth, displayHeight, canvasWidth, canvasHeight } = getARViewportConfig();
       const scene = document.createElement('a-scene');
       scene.setAttribute('arjs', [
         'sourceType: webcam',
@@ -221,10 +221,8 @@ const { glaceonSrc, twitterSrc, githubSrc, qiitaSrc } = Astro.props;
         'maxDetectionRate: 60',
         `displayWidth: ${displayWidth}`,
         `displayHeight: ${displayHeight}`,
-        `sourceWidth: ${sourceWidth}`,
-        `sourceHeight: ${sourceHeight}`,
-        `canvasWidth: ${sourceWidth}`,
-        `canvasHeight: ${sourceHeight}`,
+        `canvasWidth: ${canvasWidth}`,
+        `canvasHeight: ${canvasHeight}`,
       ].join('; '));
       scene.setAttribute('vr-mode-ui', 'enabled: false');
       scene.setAttribute('renderer', 'logarithmicDepthBuffer: true; precision: medium;');
