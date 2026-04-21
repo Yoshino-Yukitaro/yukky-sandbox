@@ -132,50 +132,60 @@ const { glaceonSrc, twitterSrc, githubSrc, qiitaSrc } = Astro.props;
 
   function closeAR() {
     stopAllCameraStreams();
+    document.documentElement.classList.remove('ar-mode');
+    document.body.classList.remove('ar-mode');
     const url = new URL(window.location.href);
     url.searchParams.delete('mode');
     window.location.href = url.toString();
   }
 
-  function applyARViewportStyles() {
-    const fullscreenStyle = {
-      position: 'fixed',
-      inset: '0',
-      width: '100vw',
-      height: '100vh',
-      objectFit: 'cover',
-    };
+  // AR.js は内部で video / canvas / body に position・width・height などの
+  // インラインスタイルを強制上書きする (copyElementSizeTo / onResizeElement)。
+  // 縦画面の場合 canvas 幅が `4 * height / 3` の固定計算になり横幅が圧縮される。
+  // そのため !important 付きの CSS でビューポート全体を覆うように強制する。
+  function injectARStyles() {
+    if (document.getElementById('ar-profile-styles')) return;
+    const style = document.createElement('style');
+    style.id = 'ar-profile-styles';
+    style.textContent = `
+      @keyframes ar-spin { to { transform: rotate(360deg); } }
 
-    document.querySelectorAll('video').forEach((video) => {
-      Object.assign(video.style, fullscreenStyle, {
-        zIndex: '1',
-        pointerEvents: 'none',
-      });
-    });
+      html.ar-mode, body.ar-mode {
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        overflow: hidden !important;
+        background: #000 !important;
+      }
 
-    document.querySelectorAll('canvas').forEach((canvas) => {
-      Object.assign(canvas.style, fullscreenStyle, {
-        zIndex: '2',
-      });
-    });
-  }
+      body.ar-mode video,
+      body.ar-mode canvas.a-canvas,
+      body.ar-mode .a-canvas,
+      body.ar-mode #arjs-video {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        margin: 0 !important;
+        object-fit: cover !important;
+        object-position: center !important;
+      }
 
-  function getARViewportConfig() {
-    const displayWidth = Math.max(window.innerWidth, 1);
-    const displayHeight = Math.max(window.innerHeight, 1);
-    const isPortrait = displayHeight >= displayWidth;
-    const baseWidth = isPortrait ? 480 : 640;
-    const baseHeight = Math.round((baseWidth * displayHeight) / displayWidth);
-
-    return {
-      displayWidth,
-      displayHeight,
-      canvasWidth: baseWidth,
-      canvasHeight: baseHeight,
-    };
+      body.ar-mode video { z-index: 1 !important; pointer-events: none; }
+      body.ar-mode canvas.a-canvas,
+      body.ar-mode .a-canvas { z-index: 2 !important; }
+    `;
+    document.head.appendChild(style);
   }
 
   function buildARShell() {
+    injectARStyles();
+    document.documentElement.classList.add('ar-mode');
+    document.body.classList.add('ar-mode');
     document.body.innerHTML = `
       <div id="ar-ui-bar" style="position:fixed;top:0;left:0;right:0;z-index:9999;display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:rgba(0,0,0,0.6);">
         <span style="color:#FEF3C7;font-size:15px;font-weight:bold;letter-spacing:0.05em;">AR プロフィール</span>
@@ -190,9 +200,7 @@ const { glaceonSrc, twitterSrc, githubSrc, qiitaSrc } = Astro.props;
         <div style="width:48px;height:48px;border:4px solid rgba(255,255,255,0.3);border-top-color:white;border-radius:50%;animation:ar-spin 1s linear infinite;"></div>
         <p style="font-size:14px;opacity:0.8;margin:0;">AR を初期化中...</p>
       </div>
-      <style>@keyframes ar-spin{to{transform:rotate(360deg)}}</style>
     `;
-    document.body.style.cssText = 'overflow:hidden;margin:0;padding:0;background:#000;';
     document.getElementById('ar-close-btn').addEventListener('click', closeAR);
   }
 
@@ -212,21 +220,18 @@ const { glaceonSrc, twitterSrc, githubSrc, qiitaSrc } = Astro.props;
       document.getElementById('ar-marker-hint').style.display = 'block';
 
       // ---- Scene ----
-      const { displayWidth, displayHeight, canvasWidth, canvasHeight } = getARViewportConfig();
+      // canvasWidth / canvasHeight / displayWidth / displayHeight は指定しない。
+      // AR.js のデフォルト (640x480) に委ね、映像は CSS の object-fit: cover で
+      // 画面全体に伸ばさず中央クロップ表示する。
       const scene = document.createElement('a-scene');
       scene.setAttribute('arjs', [
         'sourceType: webcam',
         'debugUIEnabled: false',
         'detectionMode: mono',
         'maxDetectionRate: 60',
-        `displayWidth: ${displayWidth}`,
-        `displayHeight: ${displayHeight}`,
-        `canvasWidth: ${canvasWidth}`,
-        `canvasHeight: ${canvasHeight}`,
       ].join('; '));
       scene.setAttribute('vr-mode-ui', 'enabled: false');
       scene.setAttribute('renderer', 'logarithmicDepthBuffer: true; precision: medium;');
-      scene.style.cssText = 'position:fixed;inset:0;width:100vw;height:100vh;';
 
       // ---- Assets ----
       const assets = document.createElement('a-assets');
@@ -308,12 +313,9 @@ const { glaceonSrc, twitterSrc, githubSrc, qiitaSrc } = Astro.props;
       scene.appendChild(camera);
 
       document.body.appendChild(scene);
-      applyARViewportStyles();
 
-      // loaded 後に z-index 調整とマーカー監視を設定
+      // loaded 後にマーカー監視を設定
       scene.addEventListener('loaded', () => {
-        applyARViewportStyles();
-
         const markerEl = document.getElementById('ar-marker');
         const hint = document.getElementById('ar-marker-hint');
         if (markerEl && hint) {
@@ -321,9 +323,6 @@ const { glaceonSrc, twitterSrc, githubSrc, qiitaSrc } = Astro.props;
           markerEl.addEventListener('markerLost',  () => { hint.style.display = 'block'; });
         }
       });
-
-      window.addEventListener('resize', applyARViewportStyles);
-      window.addEventListener('orientationchange', applyARViewportStyles);
 
     } catch (err) {
       const loading = document.getElementById('ar-loading');
