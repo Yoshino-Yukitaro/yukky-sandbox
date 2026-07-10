@@ -9,6 +9,10 @@ const { glaceonSrc, twitterSrc, githubSrc, qiitaSrc } = Astro.props;
 ---
 
 <script define:vars={{ glaceonSrc, twitterSrc, githubSrc, qiitaSrc }}>
+  // Web カメラに要求する解像度 (4:3)。AR.js の解析キャンバスも同じ比率に揃える
+  const AR_SOURCE_WIDTH = 640;
+  const AR_SOURCE_HEIGHT = 480;
+
   function loadScript(src) {
     return new Promise((resolve, reject) => {
       const script = document.createElement('script');
@@ -137,42 +141,42 @@ const { glaceonSrc, twitterSrc, githubSrc, qiitaSrc } = Astro.props;
     window.location.href = url.toString();
   }
 
+  // video と canvas に「ビデオのアスペクト比を保ったまま画面全体を覆う」同一の矩形を適用する。
+  // 投影行列はカメラ映像の縦横比を前提に作られるため、表示側で比率を変えると AR が歪む。
   function applyARViewportStyles() {
-    const fullscreenStyle = {
+    const vw = Math.max(window.innerWidth, 1);
+    const vh = Math.max(window.innerHeight, 1);
+    const video = document.querySelector('video');
+    const srcW = video && video.videoWidth ? video.videoWidth : AR_SOURCE_WIDTH;
+    const srcH = video && video.videoHeight ? video.videoHeight : AR_SOURCE_HEIGHT;
+    const scale = Math.max(vw / srcW, vh / srcH);
+    const w = Math.round(srcW * scale);
+    const h = Math.round(srcH * scale);
+
+    const coverStyle = {
       position: 'fixed',
-      inset: '0',
-      width: '100vw',
-      height: '100vh',
-      objectFit: 'cover',
+      top: `${Math.round((vh - h) / 2)}px`,
+      left: `${Math.round((vw - w) / 2)}px`,
+      right: 'auto',
+      bottom: 'auto',
+      width: `${w}px`,
+      height: `${h}px`,
+      margin: '0',
+      objectFit: 'fill',
     };
 
-    document.querySelectorAll('video').forEach((video) => {
-      Object.assign(video.style, fullscreenStyle, {
+    document.querySelectorAll('video').forEach((v) => {
+      Object.assign(v.style, coverStyle, {
         zIndex: '1',
         pointerEvents: 'none',
       });
     });
 
     document.querySelectorAll('canvas').forEach((canvas) => {
-      Object.assign(canvas.style, fullscreenStyle, {
+      Object.assign(canvas.style, coverStyle, {
         zIndex: '2',
       });
     });
-  }
-
-  function getARViewportConfig() {
-    const displayWidth = Math.max(window.innerWidth, 1);
-    const displayHeight = Math.max(window.innerHeight, 1);
-    const isPortrait = displayHeight >= displayWidth;
-    const baseWidth = isPortrait ? 480 : 640;
-    const baseHeight = Math.round((baseWidth * displayHeight) / displayWidth);
-
-    return {
-      displayWidth,
-      displayHeight,
-      canvasWidth: baseWidth,
-      canvasHeight: baseHeight,
-    };
   }
 
   function buildARShell() {
@@ -212,17 +216,18 @@ const { glaceonSrc, twitterSrc, githubSrc, qiitaSrc } = Astro.props;
       document.getElementById('ar-marker-hint').style.display = 'block';
 
       // ---- Scene ----
-      const { displayWidth, displayHeight, canvasWidth, canvasHeight } = getARViewportConfig();
+      // 解析キャンバスはカメラ映像 (sourceWidth/Height) と同じ縦横比にすること。
+      // 比率がずれると姿勢推定が歪み、AR オブジェクトが縦横に潰れて表示される。
       const scene = document.createElement('a-scene');
       scene.setAttribute('arjs', [
         'sourceType: webcam',
         'debugUIEnabled: false',
         'detectionMode: mono',
         'maxDetectionRate: 60',
-        `displayWidth: ${displayWidth}`,
-        `displayHeight: ${displayHeight}`,
-        `canvasWidth: ${canvasWidth}`,
-        `canvasHeight: ${canvasHeight}`,
+        `sourceWidth: ${AR_SOURCE_WIDTH}`,
+        `sourceHeight: ${AR_SOURCE_HEIGHT}`,
+        `canvasWidth: ${AR_SOURCE_WIDTH}`,
+        `canvasHeight: ${AR_SOURCE_HEIGHT}`,
       ].join('; '));
       scene.setAttribute('vr-mode-ui', 'enabled: false');
       scene.setAttribute('renderer', 'logarithmicDepthBuffer: true; precision: medium;');
@@ -324,6 +329,8 @@ const { glaceonSrc, twitterSrc, githubSrc, qiitaSrc } = Astro.props;
 
       window.addEventListener('resize', applyARViewportStyles);
       window.addEventListener('orientationchange', applyARViewportStyles);
+      // AR.js が生成する video の実寸が判明したら矩形を再計算する
+      document.addEventListener('loadedmetadata', applyARViewportStyles, true);
 
     } catch (err) {
       const loading = document.getElementById('ar-loading');
