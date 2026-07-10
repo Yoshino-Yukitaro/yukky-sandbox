@@ -143,6 +143,49 @@ const { glaceonSrc, twitterSrc, githubSrc, qiitaSrc } = Astro.props;
     window.location.href = url.toString();
   }
 
+  // AR.js は内部で video / canvas に position・width・height などのインライン
+  // スタイルを強制上書きする (copyElementSizeTo / onResizeElement)。そのため
+  // 矩形の適用は !important 付き CSS で行い、常に勝てるようにする。
+  // 実際の矩形値は applyARViewportStyles が CSS 変数経由で更新する。
+  function injectARStyles() {
+    if (document.getElementById('ar-profile-styles')) return;
+    const style = document.createElement('style');
+    style.id = 'ar-profile-styles';
+    style.textContent = `
+      @keyframes ar-spin { to { transform: rotate(360deg); } }
+
+      html.ar-mode, body.ar-mode {
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        overflow: hidden !important;
+        background: #000 !important;
+      }
+
+      body.ar-mode video,
+      body.ar-mode canvas.a-canvas,
+      body.ar-mode .a-canvas,
+      body.ar-mode #arjs-video {
+        position: fixed !important;
+        top: var(--ar-top, 0px) !important;
+        left: var(--ar-left, 0px) !important;
+        right: auto !important;
+        bottom: auto !important;
+        width: var(--ar-width, 100vw) !important;
+        height: var(--ar-height, 100vh) !important;
+        margin: 0 !important;
+        object-fit: cover !important;
+        object-position: center !important;
+      }
+
+      body.ar-mode video { z-index: 1 !important; pointer-events: none !important; }
+      body.ar-mode canvas.a-canvas,
+      body.ar-mode .a-canvas { z-index: 2 !important; }
+    `;
+    document.head.appendChild(style);
+  }
+
   // video と canvas に「ビデオのアスペクト比を保ったまま画面全体を覆う」同一の矩形を適用する。
   // 投影行列はカメラ映像の縦横比を前提に作られるため、表示側で比率を変えると AR が歪む。
   function applyARViewportStyles() {
@@ -155,30 +198,11 @@ const { glaceonSrc, twitterSrc, githubSrc, qiitaSrc } = Astro.props;
     const w = Math.round(srcW * scale);
     const h = Math.round(srcH * scale);
 
-    const coverStyle = {
-      position: 'fixed',
-      top: `${Math.round((vh - h) / 2)}px`,
-      left: `${Math.round((vw - w) / 2)}px`,
-      right: 'auto',
-      bottom: 'auto',
-      width: `${w}px`,
-      height: `${h}px`,
-      margin: '0',
-      objectFit: 'fill',
-    };
-
-    document.querySelectorAll('video').forEach((v) => {
-      Object.assign(v.style, coverStyle, {
-        zIndex: '1',
-        pointerEvents: 'none',
-      });
-    });
-
-    document.querySelectorAll('canvas').forEach((canvas) => {
-      Object.assign(canvas.style, coverStyle, {
-        zIndex: '2',
-      });
-    });
+    const root = document.documentElement.style;
+    root.setProperty('--ar-top', `${Math.round((vh - h) / 2)}px`);
+    root.setProperty('--ar-left', `${Math.round((vw - w) / 2)}px`);
+    root.setProperty('--ar-width', `${w}px`);
+    root.setProperty('--ar-height', `${h}px`);
   }
 
   function buildARShell() {
@@ -315,9 +339,11 @@ const { glaceonSrc, twitterSrc, githubSrc, qiitaSrc } = Astro.props;
       scene.appendChild(camera);
 
       document.body.appendChild(scene);
+      applyARViewportStyles();
 
       // loaded 後にマーカー監視を設定
       scene.addEventListener('loaded', () => {
+        applyARViewportStyles();
         const markerEl = document.getElementById('ar-marker');
         const hint = document.getElementById('ar-marker-hint');
         if (markerEl && hint) {
